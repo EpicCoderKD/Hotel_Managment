@@ -1,0 +1,325 @@
+/* General Styles */
+.container {
+  font-family: "Times New Roman", serif;
+  background-color: white;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 3rem;
+  background: white;
+  border-bottom: 2px solid #8B0000;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.hotelInfo h1 {
+  font-size: 24px;
+  margin: 0;
+  font-weight: bold;
+  transition: text-decoration 0.3s ease-in-out;
+}
+
+.hotelInfo p {
+  font-size: 14px;
+  color: #000000;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Book Now Button */
+.bookNow {
+  background: #000000;
+  color: white;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.bookNow:hover {
+  background: #800000;
+}
+
+/* Navigation Bar */
+.nav {
+  background: white;
+  border-bottom: 2px solid #800000;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 125px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav ul li {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+  text-transform: uppercase;
+  transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out;
+}
+
+.nav ul li:hover {
+  color: #800000;
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Hero Section */
+.hero {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /* Full viewport height */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align text to the upper part */
+  text-align: center;
+  color: white;
+  position: relative;
+  padding-top: 3vh; /* Push text down slightly */
+}
+
+.heroContent {
+  background: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 80%;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.rating {
+  font-size: 24px;
+  color: gold;
+}
+
+/* Services Section */
+.servicesContainer {
+  text-align: center;
+  padding: 40px 10px; /* Increased padding for a better gap */
+  margin-top: 30px; /* Adds space between the sections */
+}
+
+.servicesTitle {
+  font-size: 24px;
+  margin-bottom: 10px; /* Less space between title and grid */
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Services Grid - Square Layout */
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  grid-template-rows: repeat(3, auto); /* 3 rows for a square shape */
+  gap: 50px; /* Reduced gap for a tighter layout */
+  justify-content: center;
+  align-items: center;
+  max-width: 400px; /* Keeps it compact */
+  margin: 0 auto; /* Center the grid */
+}
+
+@media (max-width: 900px) {
+  .servicesGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 per row on medium screens */
+    grid-template-rows: repeat(4, auto); /* Adjust rows */
+  }
+}
+
+@media (max-width: 600px) {
+  .servicesGrid {
+    grid-template-columns: repeat(1, 1fr); /* 1 per row on mobile */
+    grid-template-rows: repeat(6, auto);
+  }
+}
+
+.serviceItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.serviceItem:hover {
+  transform: translateY(-7px);
+}
+
+.serviceIcon {
+  font-size: 40px; /* Slightly smaller for balance */
+  color: #000000; /* Dark red */
+}
+
+.servicesTitle {
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+}
+
+.servicesTitle::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #800000;
+  margin: 5px auto 0; /* Adjust space between text and underline */
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+/* .sectionTitle::after {
+  content: "";
+  display: block;
+  width: 2000%;
+  height: 2px;
+  background-color: #800000;
+  margin: 5px auto 0;
+} */
+
+.storySection {
+  text-align: center;
+  padding: 60px 10%;
+  background-color:white;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000000;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: #800000;
+  margin: 10px auto;
+}
+
+.storyContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.storyImage {
+  width: 40%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.storyText {
+  width: 50%;
+  text-align: left;
+  font-family: "Times New Roman", serif;
+  color: #000000;
+}
+
+.storyText h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #990b0b;
+  margin-top: 15px;
+}
+
+.storyText p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.aboutSection {
+  padding: 60px 20px;
+  background-color: white;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.aboutContent {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #555;
+}
+
+.aboutContent p {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.contactDetails {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.contactDetails h3 {
+  font-size: 22px;
+  color: #444;
+  margin-top: 15px;
+}
+
+.contactDetails p {
+  font-size: 18px;
+  color: #666;
+}
+
+

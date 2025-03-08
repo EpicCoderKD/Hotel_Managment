@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Orange stripe -->
+  <rect width="900" height="200" fill="#FF9933"/>
+  <!-- White stripe -->
+  <rect y="200" width="900" height="200" fill="#FFFFFF"/>
+  <!-- Green stripe -->
+  <rect y="400" width="900" height="200" fill="#138808"/>
+  <!-- Navy blue Ashoka Chakra -->
+  <circle cx="450" cy="300" r="60" fill="#000080"/>
+  <circle cx="450" cy="300" r="55" fill="#FFFFFF"/>
+  <circle cx="450" cy="300" r="20" fill="#000080"/>
+  <!-- 24 spokes -->
+  <g stroke="#000080" stroke-width="4">
+    <circle cx="450" cy="300" r="40" fill="none"/>
+    <!-- Spokes -->
+    <path d="M450,260 L450,340 M410,300 L490,300 M424,274 L476,326 M424,326 L476,274"/>
+  </g>
+</svg> 
