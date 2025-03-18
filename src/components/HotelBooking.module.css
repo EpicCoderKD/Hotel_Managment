@@ -1,0 +1,324 @@
+:root {
+  --primary-color: #970b0b;
+  --secondary-color: white;
+  --text-color: #333;
+  --light-text: #666;
+  --border-color: white;
+  --background-color: white;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.pageHeader {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background-color: white;
+  border-bottom: 2px solid #970b0b;
+  margin: 1rem 0;
+}
+
+.pageHeader h1 {
+  font-size: 2.5rem;
+  color: #970b0b;
+  margin-bottom: 0.5rem;
+}
+
+.pageHeader p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.formCard {
+  display: flex;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.formCard:hover {
+  transform: translateY(-5px);
+}
+
+.leftSection {
+  flex: 1;
+  padding: 3rem;
+  background: linear-gradient(135deg, #970b0b 0%, #800000 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.leftSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../assets/images/Booking_p.png') center/cover;
+  opacity: 0.1;
+}
+
+.leftSection h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.leftSection p {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.illustration {
+  flex-grow: 1;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 300px;
+  position: relative;
+  z-index: 1;
+}
+
+.rightSection {
+  flex: 1;
+  padding: 3rem;
+  background: white;
+}
+
+.rightSection h2 {
+  color: #970b0b;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.rightSection h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: #970b0b;
+}
+
+.formRow {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup {
+  flex: 1;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: #970b0b;
+  box-shadow: 0 0 0 3px rgba(151, 11, 11, 0.1);
+  outline: none;
+}
+
+.formGroup input:hover,
+.formGroup select:hover {
+  border-color: #970b0b;
+}
+
+.phoneInputContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.phoneInputContainer:hover {
+  border-color: #970b0b;
+}
+
+.phoneInputContainer:focus-within {
+  border-color: #970b0b;
+  box-shadow: 0 0 0 3px rgba(151, 11, 11, 0.1);
+}
+
+.countryCode {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  background: #f5f5f5;
+  border-right: 2px solid #e0e0e0;
+  color: #333;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.flagIcon {
+  width: 20px;
+  height: 15px;
+  margin-right: 5px;
+}
+
+.phoneInputContainer input {
+  border: none;
+  border-radius: 0;
+  padding: 0.8rem;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.errorMessage {
+  background-color: #fff5f5;
+  color: #dc3545;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ffcdd2;
+  font-size: 0.9rem;
+}
+
+.submitButton {
+  background: #970b0b;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.submitButton:hover {
+  background: #800000;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(151, 11, 11, 0.3);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+}
+
+.submitButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Date and Time Input Styling */
+input[type="date"],
+input[type="time"] {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 40px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .formCard {
+    flex-direction: column;
+    margin: 20px auto;
+    width: 95%;
+  }
+  
+  .leftSection,
+  .rightSection {
+    padding: 2rem;
+  }
+  
+  .formRow {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .illustration {
+    min-height: 200px;
+  }
+  
+  .nav ul {
+    gap: 20px;
+  }
+  
+  .nav ul li {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Animation for form elements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formGroup {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.formGroup:nth-child(1) { animation-delay: 0.1s; }
+.formGroup:nth-child(2) { animation-delay: 0.2s; }
+.formGroup:nth-child(3) { animation-delay: 0.3s; }
+.formGroup:nth-child(4) { animation-delay: 0.4s; }
+.formGroup:nth-child(5) { animation-delay: 0.5s; }
+.formGroup:nth-child(6) { animation-delay: 0.6s; }
+.formGroup:nth-child(7) { animation-delay: 0.7s; }
+.formGroup:nth-child(8) { animation-delay: 0.8s; }

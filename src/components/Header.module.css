@@ -1,0 +1,230 @@
+/* HEADER */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: linear-gradient(to right, #ffffff, #f9f9f9);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  padding: 0.8rem 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 3px solid #800000;
+}
+
+/* TOP SECTION */
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 3rem 0.7rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(128, 0, 0, 0.1);
+}
+
+.logoContainer {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.2rem 0;
+}
+
+.logoContainer:hover {
+  transform: translateY(-2px);
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 900;
+  color: #800000;
+  letter-spacing: 1px;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tagline {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  margin: 0;
+  letter-spacing: 0.8px;
+}
+
+/* BUTTON CONTAINER */
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* REGISTER BUTTON */
+.registerButton {
+  background: transparent;
+  color: #800000;
+  font-size: 15px;
+  padding: 9px 24px;
+  border: 2px solid #800000;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.registerButton:hover {
+  background: rgba(128, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(128, 0, 0, 0.1);
+}
+
+.registerButton:active {
+  transform: translateY(1px);
+}
+
+/* BOOK NOW BUTTON */
+.bookNow {
+  background: #800000;
+  color: white;
+  font-size: 15px;
+  padding: 10px 26px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+  box-shadow: 0 4px 8px rgba(128, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.bookNow:hover {
+  background: #9a0000;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(128, 0, 0, 0.25);
+}
+
+.bookNow:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(128, 0, 0, 0.2);
+}
+
+/* NAVIGATION BAR */
+.nav {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 0.6rem;
+}
+
+.nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav ul li {
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 8px 5px;
+  transition: all 0.3s ease;
+  position: relative;
+  letter-spacing: 0.8px;
+}
+
+.nav ul li::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #800000;
+  transition: width 0.3s ease;
+}
+
+.nav ul li:hover {
+  color: #800000;
+  transform: translateY(-2px);
+}
+
+.nav ul li:hover::after {
+  width: 100%;
+}
+
+/* ACTIVE NAV ITEM */
+.activeNavItem {
+  color: #800000 !important;
+  font-weight: 700;
+  position: relative;
+}
+
+.activeNavItem::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #800000;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .header {
+    padding: 0.6rem 0 0;
+  }
+  
+  .headerTop {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.8rem;
+    padding: 0 1rem 0.6rem;
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  .tagline {
+    font-size: 12px;
+  }
+  
+  .buttonContainer {
+    gap: 8px;
+  }
+  
+  .registerButton {
+    padding: 7px 18px;
+    font-size: 13px;
+  }
+  
+  .bookNow {
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+
+  .nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 1rem;
+  }
+  
+  .nav ul li {
+    padding: 6px 5px;
+    font-size: 13px;
+  }
+}
