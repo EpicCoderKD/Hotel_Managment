@@ -4,6 +4,7 @@ import HomePage from "./components/HomePage";
 import HotelBooking from './components/HotelBooking';
 import Accommodation from './components/Accommodation';
 import Register from './components/Register';
+import PaymentPage from './components/PaymentPage';
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/accommodation" element={<Accommodation />} />
           <Route path="/hotelbooking" element={<HotelBooking />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/payment" element={<PaymentPage />} />
         </Routes>
       </div>
     </Router>

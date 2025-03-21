@@ -20,6 +20,7 @@ const HotelBooking = () => {
   const [error, setError] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [bookingId, setBookingId] = useState('');
+  const [bookingData, setBookingData] = useState(null);
 
   const [formData, setFormData] = useState({
     roomType: selectedRoom.name || 'Master Suite',
@@ -95,12 +96,10 @@ const HotelBooking = () => {
       await setDoc(bookingRef, bookingData);
       
       setBookingId(documentId);
+      setBookingData(bookingData); // Store booking data for payment page
       setShowAlert(true);
       
-      // Navigate after 3 seconds
-      setTimeout(() => {
-        navigate('/accommodation');
-      }, 3000);
+      // Don't navigate automatically, let user choose to proceed to payment
     } catch (error) {
       console.error('Error submitting booking:', error);
       setError('Error submitting booking. Please try again.');
@@ -281,7 +280,7 @@ const HotelBooking = () => {
               className={styles.submitButton}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : 'Request Booking'}
+              {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
             </button>
           </form>
         </div>
@@ -290,7 +289,9 @@ const HotelBooking = () => {
       {showAlert && (
         <BookingAlert 
           bookingId={bookingId}
+          bookingData={bookingData}
           onClose={handleCloseAlert}
+          isPaymentSuccess={false}
         />
       )}
       

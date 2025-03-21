@@ -935,8 +935,8 @@ const Register = () => {
           </form>
         </div>
 
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };
