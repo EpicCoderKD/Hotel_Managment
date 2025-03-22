@@ -14,6 +14,10 @@ const Header = () => {
     navigate("/register");
   };
 
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
   const handleScrollTo = (sectionId) => {
     // If we're on the homepage, scroll to the section
     if (location.pathname === '/') {
@@ -41,8 +45,8 @@ const Header = () => {
           <button className={styles.registerButton} onClick={handleRegister}>
             REGISTER
           </button>
-          <button className={styles.bookNow} onClick={handleBookNow}>
-            BOOK NOW
+          <button className={styles.bookNow} onClick={handleLogin}>
+            LOGIN
           </button>
         </div>
       </div>

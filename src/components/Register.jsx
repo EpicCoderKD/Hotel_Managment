@@ -300,7 +300,7 @@ const Register = () => {
         
         // Special validation for terms acceptance
         if (!formData.termsAccepted) {
-          errors.termsAccepted = 'You must accept the terms and conditions to proceed';
+          errors.termsAccepted = 'You must accept the terms and conditions';
         }
         
         // Additional password validation
@@ -439,6 +439,7 @@ const Register = () => {
         nationality: formData.nationality,
         username: formData.username.toLowerCase(),
         email: formData.email.toLowerCase(),
+        password: formData.password, // Add password to the saved user data
         phone: formData.phone,
         address: formData.address,
         city: formData.city,
