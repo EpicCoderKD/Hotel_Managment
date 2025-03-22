@@ -55,7 +55,7 @@ const Header = () => {
       <nav className={styles.nav}>
         <ul>
           <li className={isActive("/")} onClick={() => navigate("/")}>Home</li>
-          <li className={isActive("/accommodation")} onClick={() => navigate("/accommodation")}>Accommodation</li>
+          <li onClick={() => handleScrollTo("accommodations")}>Accommodation</li>
           <li onClick={() => handleScrollTo("services")}>Services</li>
           <li onClick={() => handleScrollTo("about")}>About Us</li>
           <li onClick={() => handleScrollTo("contact")}>Contact Us</li>

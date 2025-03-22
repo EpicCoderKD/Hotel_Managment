@@ -7,12 +7,50 @@ import { FaBreadSlice, FaTree, FaSwimmingPool, FaWheelchair, FaSuitcaseRolling, 
 import { MdCleaningServices, MdOutlineRestaurant, MdWifi } from "react-icons/md";
 import Footer from './Footer';
 import Header from './Header'; // Import Header Component
+import Standard from "../assets/images/Standard.jpg";
+import Deluxe from "../assets/images/Deluxe.jpg";
+import Master from "../assets/images/Master_Suite.jpg";
+import Honeymoon from "../assets/images/honeymoon-suite.jpg";
 
 const HomePage = () => {
   const servicesRef = useRef(null);
   const aboutRef = useRef(null);
   const contactRef = useRef(null);
+  const accommodationsRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Room data for the accommodations section
+  const rooms = [
+    {
+      id: 1,
+      name: "Standard Room",
+      image: Standard,
+      price: "₹3,999/night",
+      description: "Comfortable and well-designed, our Standard Rooms provide excellent value with all essential amenities.",
+    },
+    {
+      id: 2,
+      name: "Deluxe Room",
+      image: Deluxe,
+      price: "₹5,999/night",
+      description: "Our Deluxe Rooms offer the perfect blend of comfort and style with modern furnishings and a well-appointed bathroom.",
+    },
+    {
+      id: 3,
+      name: "Master Suite",
+      image: Master,
+      price: "₹9,999/night",
+      description: "Experience ultimate luxury in our Master Suite with a spacious king-size bed and breathtaking views.",
+    },
+    {
+      id: 4,
+      name: "Honeymoon Suite",
+      image: Honeymoon,
+      price: "₹12,999/night",
+      description: "Indulge in romance and luxury in our exclusive Honeymoon Suite with a stunning king-size canopy bed and private balcony.",
+    },
+  ];
 
   useEffect(() => {
     // Handle direct navigation with hash
@@ -37,6 +75,27 @@ const HomePage = () => {
           <h1>WELCOME TO SOLACE STAY</h1>
           <p>WHERE LUXURY MEETS COMFORT</p>
           <div className={styles.rating}>★★★★★</div>
+        </div>
+      </section>
+
+      {/* Accommodations Section */}
+      <section ref={accommodationsRef} id="accommodations" className={styles.accommodationsSection}>
+        <h2 className={styles.sectionTitle}>OUR ACCOMMODATIONS</h2>
+        <p className={styles.accommodationsIntro}>Experience luxury and comfort in our beautifully designed rooms and suites</p>
+        <div className={styles.roomsGrid}>
+          {rooms.map((room) => (
+            <div key={room.id} className={styles.roomCard}>
+              <div className={styles.roomImageContainer}>
+                <img src={room.image} alt={room.name} className={styles.roomImage} />
+                <div className={styles.roomOverlay}>
+                  <h3>{room.name}</h3>
+                  <p className={styles.roomPrice}>{room.price}</p>
+                  <p className={styles.roomDescription}>{room.description}</p>
+                </div>
+              </div>
+              <h3 className={styles.roomTitle}>{room.name}</h3>
+            </div>
+          ))}
         </div>
       </section>
 
