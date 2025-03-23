@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './PaymentPage.module.css';
 import Header from './Header';
 import Footer from './Footer';
 import { FaLock, FaCreditCard, FaRegCreditCard, FaExclamationTriangle, FaCalendarAlt, FaShieldAlt, 
-  FaMobileAlt, FaUniversity, FaQrcode } from 'react-icons/fa';
+  FaMobileAlt, FaUniversity, FaQrcode, FaCheck, FaSpinner, FaDownload } from 'react-icons/fa';
 import { db } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import BookingAlert from './BookingAlert';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import parthupiQR from '../assets/images/Parthupi.jpg';
+
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -37,6 +41,7 @@ const PaymentPage = () => {
   const [formData, setFormData] = useState({
     // Card details
     cardType: '',
+    cardCategory: 'debit', // default to debit card
     nameOnCard: '',
     cardNumber: '',
     expiryMonth: '',
@@ -250,6 +255,70 @@ const PaymentPage = () => {
     });
   };
 
+  // Generate and download payment receipt
+  const generateReceipt = () => {
+    const doc = new jsPDF();
+    
+    // Add Solace Stay logo and header
+    doc.setFontSize(22);
+    doc.setTextColor(151, 11, 11); // #970b0b
+    doc.text('Solace Stay', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Payment Receipt', 105, 30, { align: 'center' });
+    
+    // Add receipt details
+    doc.setFontSize(12);
+    doc.text(`Receipt No: ${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`, 20, 45);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 55);
+    doc.text(`Time: ${new Date().toLocaleTimeString()}`, 20, 65);
+    
+    // Add booking details
+    doc.setFontSize(14);
+    doc.text('Booking Details', 20, 80);
+    
+    doc.setFontSize(12);
+    doc.text(`Guest Name: ${bookingData.firstName} ${bookingData.lastName}`, 20, 90);
+    doc.text(`Email: ${bookingData.email}`, 20, 100);
+    doc.text(`Room Type: ${bookingData.roomType}`, 20, 110);
+    doc.text(`Check-in: ${bookingData.checkInDate}`, 20, 120);
+    doc.text(`Check-out: ${bookingData.checkOutDate}`, 20, 130);
+    doc.text(`Guests: ${bookingData.adults} Adults, ${bookingData.children} Children`, 20, 140);
+    
+    // Add payment details
+    doc.setFontSize(14);
+    doc.text('Payment Details', 20, 160);
+    
+    doc.setFontSize(12);
+    doc.text(`Payment Method: ${paymentMethod === 'card' ? `${formData.cardCategory.charAt(0).toUpperCase() + formData.cardCategory.slice(1)} Card (${formData.cardType.toUpperCase()})` : 
+      paymentMethod === 'upi' ? 'UPI' : 
+      paymentMethod === 'netbanking' ? `Net Banking (${formData.bankName})` : 'Unknown'}`, 20, 170);
+    
+    // Add payment summary table
+    doc.autoTable({
+      startY: 180,
+      head: [['Description', 'Amount']],
+      body: [
+        ['Room Charges', `₹${bookingData.roomPrice}`],
+        ['Taxes (18% GST)', `₹${Math.round(bookingData.roomPrice * 0.18)}`],
+        ['Total Amount', `₹${bookingData.totalAmount}`]
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [151, 11, 11] },
+      margin: { left: 20, right: 20 }
+    });
+    
+    // Add footer
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(10);
+    doc.text('Thank you for choosing Solace Stay!', 105, pageHeight - 30, { align: 'center' });
+    doc.text('For any queries, please contact us at support@solacestay.com', 105, pageHeight - 20, { align: 'center' });
+    
+    // Save the PDF
+    doc.save('Solace_Stay_Payment_Receipt.pdf');
+  };
+
   if (!bookingData && !location.state) {
     return (
       <div className={styles.container}>
@@ -364,10 +433,25 @@ const PaymentPage = () => {
               <div className={styles.cardDetails}>
                 <h3><FaCreditCard /> Card Information</h3>
                 
+                <div className={styles.cardCategorySelector}>
+                  <div 
+                    className={`${styles.cardCategoryOption} ${formData.cardCategory === 'debit' ? styles.active : ''}`}
+                    onClick={() => setFormData({...formData, cardCategory: 'debit'})}
+                  >
+                    Debit Card
+                  </div>
+                  <div 
+                    className={`${styles.cardCategoryOption} ${formData.cardCategory === 'credit' ? styles.active : ''}`}
+                    onClick={() => setFormData({...formData, cardCategory: 'credit'})}
+                  >
+                    Credit Card
+                  </div>
+                </div>
+                
                 <div className={styles.cardTypeIndicator}>
                   {formData.cardType && (
                     <div className={styles.detectedCard}>
-                      <span>Detected Card Type:</span>
+                      <span>Detected {formData.cardCategory === 'credit' ? 'Credit' : 'Debit'} Card:</span>
                       <div className={styles.cardLogo}>
                         {formData.cardType === 'visa' && (
                           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" />
@@ -486,11 +570,10 @@ const PaymentPage = () => {
                 <div className={styles.upiContent}>
                   <div className={styles.upiQrSection}>
                     <div className={styles.qrPlaceholder}>
-                      <FaQrcode size={120} />
+                      <img src={parthupiQR} alt="UPI QR Code" className={styles.upiQrCode} />
                       <p>Scan QR with any UPI app</p>
                     </div>
                     <div className={styles.upiAppLinks}>
-                      <p>Pay using:</p>
                       <ul>
                         <li><a href="https://pay.google.com/" target="_blank" rel="noopener noreferrer">Google Pay</a></li>
                         <li><a href="https://paytm.com/" target="_blank" rel="noopener noreferrer">Paytm</a></li>
@@ -532,58 +615,64 @@ const PaymentPage = () => {
                 <h3><FaUniversity /> Net Banking</h3>
                 
                 <div className={styles.popularBanks}>
-                  <p>Popular Banks</p>
-                  <div className={styles.bankIcons}>
+                  <h4>Popular Banks</h4>
+                  <div className={styles.bankOptions}>
                     <div 
-                      className={`${styles.bankIcon} ${formData.bankName === 'SBI' ? styles.active : ''}`} 
+                      className={`${styles.bankOption} ${formData.bankName === 'SBI' ? styles.active : ''}`}
                       onClick={() => setFormData({...formData, bankName: 'SBI'})}
                     >
-                      <div className={styles.bankLogo}>SBI</div>
-                      <p>SBI</p>
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/SBI-logo.svg" alt="SBI" />
+                      <span>SBI</span>
                     </div>
                     <div 
-                      className={`${styles.bankIcon} ${formData.bankName === 'HDFC' ? styles.active : ''}`} 
+                      className={`${styles.bankOption} ${formData.bankName === 'HDFC' ? styles.active : ''}`}
                       onClick={() => setFormData({...formData, bankName: 'HDFC'})}
                     >
-                      <div className={styles.bankLogo}>HDFC</div>
-                      <p>HDFC</p>
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/2/28/HDFC_Bank_Logo.svg" alt="HDFC" />
+                      <span>HDFC</span>
                     </div>
                     <div 
-                      className={`${styles.bankIcon} ${formData.bankName === 'ICICI' ? styles.active : ''}`} 
+                      className={`${styles.bankOption} ${formData.bankName === 'ICICI' ? styles.active : ''}`}
                       onClick={() => setFormData({...formData, bankName: 'ICICI'})}
                     >
-                      <div className={styles.bankLogo}>ICICI</div>
-                      <p>ICICI</p>
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/ICICI_Bank_Logo.svg" alt="ICICI" />
+                      <span>ICICI</span>
                     </div>
                     <div 
-                      className={`${styles.bankIcon} ${formData.bankName === 'Axis' ? styles.active : ''}`} 
+                      className={`${styles.bankOption} ${formData.bankName === 'Axis' ? styles.active : ''}`}
                       onClick={() => setFormData({...formData, bankName: 'Axis'})}
                     >
-                      <div className={styles.bankLogo}>AXIS</div>
-                      <p>Axis</p>
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Axis_Bank_logo.svg" alt="Axis" />
+                      <span>Axis</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className={styles.formGroup}>
-                  <label>Select Bank</label>
-                  <select
-                    name="bankName"
-                    value={formData.bankName}
+                <div className={styles.otherBanks}>
+                  <h4>Other Banks</h4>
+                  <select 
+                    name="bankName" 
+                    value={formData.bankName} 
                     onChange={handleChange}
                     disabled={isSubmitting}
+                    className={styles.bankSelect}
                   >
-                    <option value="">-- Select Bank --</option>
-                    {banks.map(bank => (
-                      <option key={bank.value} value={bank.value}>{bank.label}</option>
-                    ))}
+                    <option value="">Select Bank</option>
+                    <option value="SBI">State Bank of India</option>
+                    <option value="HDFC">HDFC Bank</option>
+                    <option value="ICICI">ICICI Bank</option>
+                    <option value="Axis">Axis Bank</option>
+                    <option value="BOB">Bank of Baroda</option>
+                    <option value="PNB">Punjab National Bank</option>
+                    <option value="Canara">Canara Bank</option>
+                    <option value="Union">Union Bank of India</option>
+                    <option value="Kotak">Kotak Mahindra Bank</option>
+                    <option value="IndusInd">IndusInd Bank</option>
+                    <option value="Yes">Yes Bank</option>
+                    <option value="IDFC">IDFC First Bank</option>
                   </select>
                   {fieldErrors.bankName && <span className={styles.errorText}>{fieldErrors.bankName}</span>}
                 </div>
-                
-                <p className={styles.netBankingNote}>
-                  You will be redirected to your bank's website to complete the payment
-                </p>
               </div>
             )}
             
@@ -611,6 +700,22 @@ const PaymentPage = () => {
           onClose={handleCloseAlert}
           isPaymentSuccess={true}
         />
+      )}
+      
+      {paymentSuccess && (
+        <div className={styles.successMessage}>
+          <FaCheck className={styles.successIcon} />
+          <h2>Payment Successful!</h2>
+          <p>Your booking has been confirmed. Check your email for details.</p>
+          <div className={styles.receiptButton}>
+            <button onClick={generateReceipt} className={styles.downloadBtn}>
+              <FaDownload /> Download Receipt
+            </button>
+          </div>
+          <button onClick={() => navigate('/')} className={styles.homeButton}>
+            Return to Home
+          </button>
+        </div>
       )}
       
       <Footer />
