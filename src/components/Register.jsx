@@ -38,28 +38,20 @@ const Register = () => {
   };
 
   const [formData, setFormData] = useState({
-    // Step 1: Personal Information
+    // Personal Information
     title: '',
     firstName: '',
     lastName: '',
-    dateOfBirth: '',
-    nationality: '',
-    profilePhoto: null,
-
-    // Step 2: Contact Information
     email: '',
     phone: '',
-    address: '',
     city: '',
-    state: '',
     zipCode: '',
-    country: '',
-
-    // Step 3: Identity Verification
+    
+    // Identity Verification
     idType: '',
     idNumber: '',
 
-    // Step 4: Account Security & Preferences
+    // Account Security & Preferences
     username: '',
     password: '',
     confirmPassword: '',
@@ -69,11 +61,6 @@ const Register = () => {
   });
 
   const validateField = (name, value) => {
-    // Skip validation for empty optional fields
-    if (name === 'country' && (!value || value.trim() === '')) {
-      return '';
-    }
-    
     switch (name) {
       case 'email':
         return !value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) 
@@ -108,6 +95,9 @@ const Register = () => {
         return !value ? 'You must accept the terms and conditions' : '';
       case 'idNumber':
         return validateIdNumber(formData.idType, value);
+      case 'city':
+      case 'zipCode':
+        return !value || value.trim() === '' ? `${name.charAt(0).toUpperCase() + name.slice(1)} is required` : '';
       default:
         return !value || value.trim() === '' ? `${name.charAt(0).toUpperCase() + name.slice(1)} is required` : '';
     }
@@ -233,65 +223,23 @@ const Register = () => {
     }));
   };
 
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({
-        ...prev,
-        profilePhoto: file
-      }));
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.add(styles.dragOver);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.remove(styles.dragOver);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.remove(styles.dragOver);
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      handlePhotoUpload({ target: { files: [file] } });
-    }
-  };
-
-  const removePhoto = () => {
-    setFormData(prev => ({
-      ...prev,
-      profilePhoto: null
-    }));
-  };
-
   const validateStep = (step) => {
     const errors = {};
     
     switch (step) {
       case 1:
-        ['title', 'firstName', 'lastName', 'dateOfBirth', 'nationality'].forEach(field => {
+        ['title', 'firstName', 'lastName', 'email', 'phone', 'city', 'zipCode'].forEach(field => {
           const error = validateField(field, formData[field]);
           if (error) errors[field] = error;
         });
         break;
       case 2:
-        ['email', 'phone', 'address', 'city', 'state', 'zipCode'].forEach(field => {
-          const error = validateField(field, formData[field]);
-          if (error) errors[field] = error;
-        });
-        break;
-      case 3:
         ['idType', 'idNumber'].forEach(field => {
           const error = validateField(field, formData[field]);
           if (error) errors[field] = error;
         });
         break;
-      case 4:
+      case 3:
         // Validate required fields
         ['username', 'password', 'confirmPassword', 'preferredLanguage'].forEach(field => {
           const error = validateField(field, formData[field]);
@@ -323,16 +271,12 @@ const Register = () => {
     
     switch (currentStep) {
       case 1:
-        fieldsToValidate = ['title', 'firstName', 'lastName', 'dateOfBirth', 'nationality'];
+        fieldsToValidate = ['title', 'firstName', 'lastName', 'email', 'phone', 'city', 'zipCode'];
         break;
       case 2:
-        fieldsToValidate = ['email', 'phone', 'address', 'city', 'state', 'zipCode'];
-        // Make country optional
-        break;
-      case 3:
         fieldsToValidate = ['idType', 'idNumber'];
         break;
-      case 4:
+      case 3:
         fieldsToValidate = ['username', 'password', 'confirmPassword', 'preferredLanguage'];
         if (!formData.termsAccepted) {
           errors.termsAccepted = 'You must accept the terms and conditions';
@@ -354,7 +298,7 @@ const Register = () => {
     
     // Check if there are any errors
     if (Object.keys(errors).length === 0) {
-      setCurrentStep(prev => Math.min(prev + 1, 4));
+      setCurrentStep(prev => Math.min(prev + 1, 3));
       setError('');
     } else {
       // Show specific error message
@@ -392,21 +336,16 @@ const Register = () => {
     // Validate all fields one final time
     const errors = {};
     const allFields = [
-      // Step 1
-      'title', 'firstName', 'lastName', 'dateOfBirth', 'nationality',
-      // Step 2
-      'email', 'phone', 'address', 'city', 'state', 'zipCode', 
-      // Step 3
+      // Personal Info
+      'title', 'firstName', 'lastName', 'email', 'phone', 'city', 'zipCode',
+      // Identity
       'idType', 'idNumber',
-      // Step 4
+      // Security
       'password', 'confirmPassword', 'preferredLanguage'
     ];
 
     // Check all fields
     allFields.forEach(field => {
-      // Skip country as it's optional
-      if (field === 'country') return;
-      
       const error = validateField(field, formData[field]);
       if (error) errors[field] = error;
     });
@@ -435,17 +374,12 @@ const Register = () => {
         title: formData.title,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        dateOfBirth: formData.dateOfBirth,
-        nationality: formData.nationality,
         username: formData.username.toLowerCase(),
         email: formData.email.toLowerCase(),
-        password: formData.password, // Add password to the saved user data
+        password: formData.password,
         phone: formData.phone,
-        address: formData.address,
         city: formData.city,
-        state: formData.state,
         zipCode: formData.zipCode,
-        country: formData.country || 'India', // Default to India if not specified
         idType: formData.idType,
         idNumber: formData.idNumber,
         preferredLanguage: formData.preferredLanguage,
@@ -474,7 +408,7 @@ const Register = () => {
       case 1:
         return (
           <div className={styles.formSection}>
-            <h2>Step 1: Personal Information</h2>
+            <h2>Personal Information</h2>
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label>Title</label>
@@ -511,61 +445,6 @@ const Register = () => {
             </div>
 
             <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>Date of Birth</label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Nationality</label>
-                <input
-                  type="text"
-                  name="nationality"
-                  value={formData.nationality}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Profile Photo</label>
-              <div className={styles.photoUpload}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className={styles.photoInput}
-                  id="photo-upload"
-                />
-                <label htmlFor="photo-upload" className={styles.photoUploadLabel}>
-                  {formData.profilePhoto ? 'Change Photo' : 'Upload Photo'}
-                </label>
-                {formData.profilePhoto && (
-                  <div className={styles.photoPreview}>
-                    <img 
-                      src={URL.createObjectURL(formData.profilePhoto)} 
-                      alt="Profile preview" 
-                      className={styles.previewImage}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className={styles.formSection}>
-            <h2>Step 2: Contact Information</h2>
-            <div className={styles.formRow}>
               <div className={`${styles.formGroup} ${fieldErrors.email ? styles.hasError : ''}`}>
                 <label>Email</label>
                 <input
@@ -593,18 +472,6 @@ const Register = () => {
               </div>
             </div>
 
-            <div className={`${styles.formGroup} ${fieldErrors.address ? styles.hasError : ''}`}>
-              <label>Address</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                required
-              />
-              {fieldErrors.address && <div className={styles.errorText}>{fieldErrors.address}</div>}
-            </div>
-
             <div className={styles.formRow}>
               <div className={`${styles.formGroup} ${fieldErrors.city ? styles.hasError : ''}`}>
                 <label>City</label>
@@ -616,18 +483,6 @@ const Register = () => {
                   required
                 />
                 {fieldErrors.city && <div className={styles.errorText}>{fieldErrors.city}</div>}
-              </div>
-
-              <div className={`${styles.formGroup} ${fieldErrors.state ? styles.hasError : ''}`}>
-                <label>State</label>
-                <input
-                  type="text"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  required
-                />
-                {fieldErrors.state && <div className={styles.errorText}>{fieldErrors.state}</div>}
               </div>
 
               <div className={`${styles.formGroup} ${fieldErrors.zipCode ? styles.hasError : ''}`}>
@@ -645,10 +500,10 @@ const Register = () => {
           </div>
         );
 
-      case 3:
+      case 2:
         return (
           <div className={styles.formSection}>
-            <h2>Step 3: Identity Verification</h2>
+            <h2>Identity Verification</h2>
             <div className={styles.formRow}>
               <div className={`${styles.formGroup} ${fieldErrors.idType ? styles.hasError : ''}`}>
                 <label>ID Type</label>
@@ -719,10 +574,10 @@ const Register = () => {
           </div>
         );
 
-      case 4:
+      case 3:
         return (
           <div className={styles.formSection}>
-            <h2>Step 4: Account Security & Preferences</h2>
+            <h2>Account Security & Preferences</h2>
 
             <div className={styles.formRow}>
               <div className={`${styles.formGroup} ${fieldErrors.username ? styles.hasError : ''}`}>
@@ -836,34 +691,6 @@ const Register = () => {
     }
   };
 
-  const renderFormGroup = (label, name, type = 'text', options = null) => {
-    const hasError = fieldErrors[name];
-    return (
-      <div className={`${styles.formGroup} ${hasError ? styles.hasError : ''}`}>
-        <label>{label}</label>
-        {type === 'select' ? (
-          <select
-            name={name}
-            value={formData[name]}
-            onChange={handleChange}
-            required
-          >
-            {options}
-          </select>
-        ) : (
-          <input
-            type={type}
-            name={name}
-            value={formData[name]}
-            onChange={handleChange}
-            required
-          />
-        )}
-        {hasError && <div className={styles.errorText}>{hasError}</div>}
-      </div>
-    );
-  };
-
   return (
     <div className={styles.container}>
       <Header />
@@ -877,7 +704,7 @@ const Register = () => {
           <div className={styles.progressBar}>
             <div 
               className={styles.progressStep} 
-              style={{ width: `${(currentStep / 4) * 100}%` }}
+              style={{ width: `${(currentStep / 3) * 100}%` }}
             />
             <div className={styles.stepIndicators}>
               <div 
@@ -886,16 +713,12 @@ const Register = () => {
               >1</div>
               <div 
                 className={`${styles.stepIndicator} ${currentStep >= 2 ? styles.active : ''}`}
-                data-step="Contact Info"
+                data-step="Identity"
               >2</div>
               <div 
                 className={`${styles.stepIndicator} ${currentStep >= 3 ? styles.active : ''}`}
-                data-step="Identity"
-              >3</div>
-              <div 
-                className={`${styles.stepIndicator} ${currentStep >= 4 ? styles.active : ''}`}
                 data-step="Security"
-              >4</div>
+              >3</div>
             </div>
           </div>
 
@@ -915,7 +738,7 @@ const Register = () => {
                 </button>
               )}
               
-              {currentStep < 4 ? (
+              {currentStep < 3 ? (
                 <button
                   type="button"
                   className={styles.nextButton}

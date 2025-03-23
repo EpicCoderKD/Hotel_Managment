@@ -213,6 +213,61 @@
   display: block;
 }
 
+.fieldHint {
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+  font-style: italic;
+}
+
+.verifiedText {
+  color: #28a745;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.usernameVerifyContainer {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.usernameVerifyContainer input {
+  flex: 1;
+}
+
+.verifyButton {
+  background: #970b0b;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.verifyButton:hover {
+  background: #800000;
+  transform: translateY(-2px);
+}
+
+.verifyButton:active {
+  transform: translateY(0);
+}
+
+.verifyButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .errorMessage {
   background-color: #fff5f5;
   color: #dc3545;

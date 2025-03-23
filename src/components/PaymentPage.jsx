@@ -4,7 +4,7 @@ import styles from './PaymentPage.module.css';
 import Header from './Header';
 import Footer from './Footer';
 import { FaLock, FaCreditCard, FaRegCreditCard, FaExclamationTriangle, FaCalendarAlt, FaShieldAlt, 
-  FaMobileAlt, FaUniversity, FaMoneyBillWave, FaQrcode } from 'react-icons/fa';
+  FaMobileAlt, FaUniversity, FaQrcode } from 'react-icons/fa';
 import { db } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import BookingAlert from './BookingAlert';
@@ -36,7 +36,7 @@ const PaymentPage = () => {
 
   const [formData, setFormData] = useState({
     // Card details
-    cardType: 'visa',
+    cardType: '',
     nameOnCard: '',
     cardNumber: '',
     expiryMonth: '',
@@ -48,10 +48,7 @@ const PaymentPage = () => {
     upiId: '',
     
     // Net Banking details
-    bankName: '',
-    
-    // Cash payment details
-    payAtHotel: false
+    bankName: ''
   });
 
   const [fieldErrors, setFieldErrors] = useState({});
@@ -72,15 +69,37 @@ const PaymentPage = () => {
       });
     }
     
-    // Format card number with spaces
+    // Format card number with spaces and detect card type
     if (name === 'cardNumber') {
       const cardNumber = value.replace(/\s/g, '');
       if (cardNumber.length <= 16) {
         // Add space after every 4 digits
         const formattedNumber = cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ');
+        
+        // Auto-detect card type based on patterns
+        let detectedCardType = '';
+        
+        // Visa: Starts with 4
+        if (/^4/.test(cardNumber)) {
+          detectedCardType = 'visa';
+        }
+        // Mastercard: Starts with 51-55 or 2221-2720
+        else if (/^5[1-5]/.test(cardNumber) || /^(222[1-9]|22[3-9]\d|2[3-6]\d\d|27[0-1]\d|2720)/.test(cardNumber)) {
+          detectedCardType = 'mastercard';
+        }
+        // American Express: Starts with 34 or 37
+        else if (/^3[47]/.test(cardNumber)) {
+          detectedCardType = 'amex';
+        }
+        // RuPay: Starts with 60, 6521, 6522, 6523, 6524, 6525, 6526, 6527, 6528
+        else if (/^60/.test(cardNumber) || /^652[1-8]/.test(cardNumber)) {
+          detectedCardType = 'rupay';
+        }
+        
         setFormData({
           ...formData,
-          cardNumber: formattedNumber
+          cardNumber: formattedNumber,
+          cardType: detectedCardType || formData.cardType
         });
       }
     }
@@ -130,11 +149,6 @@ const PaymentPage = () => {
       if (!formData.bankName) {
         errors.bankName = 'Please select a bank';
       }
-    } else if (paymentMethod === 'cash') {
-      // Validate cash payment agreement
-      if (!formData.payAtHotel) {
-        errors.payAtHotel = 'Please agree to pay at hotel during check-in';
-      }
     }
     
     return errors;
@@ -169,14 +183,12 @@ const PaymentPage = () => {
           paymentDetails = `UPI: ${formData.upiId}`;
         } else if (paymentMethod === 'netbanking') {
           paymentDetails = `Net Banking: ${formData.bankName}`;
-        } else {
-          paymentDetails = 'Cash payment at hotel';
         }
         
         await updateDoc(bookingRef, {
-          status: paymentMethod === 'cash' ? 'pending payment' : 'confirmed',
-          paymentStatus: paymentMethod === 'cash' ? 'pending' : 'paid',
-          paymentDate: paymentMethod === 'cash' ? null : new Date(),
+          status: 'confirmed',
+          paymentStatus: 'paid',
+          paymentDate: new Date(),
           paymentAmount: total,
           paymentMethod: paymentDetails
         });
@@ -346,44 +358,32 @@ const PaymentPage = () => {
               >
                 <FaUniversity /> Net Banking
               </button>
-              <button 
-                type="button"
-                className={`${styles.methodTab} ${paymentMethod === 'cash' ? styles.activeTab : ''}`}
-                onClick={() => setPaymentMethod('cash')}
-              >
-                <FaMoneyBillWave /> Pay at Hotel
-              </button>
             </div>
             
             {paymentMethod === 'card' && (
               <div className={styles.cardDetails}>
                 <h3><FaCreditCard /> Card Information</h3>
                 
-                <div className={styles.cardIcons}>
-                  <div 
-                    className={`${styles.cardIcon} ${formData.cardType === 'visa' ? styles.active : ''}`}
-                    onClick={() => setFormData({...formData, cardType: 'visa'})}
-                  >
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" />
-                  </div>
-                  <div 
-                    className={`${styles.cardIcon} ${formData.cardType === 'mastercard' ? styles.active : ''}`}
-                    onClick={() => setFormData({...formData, cardType: 'mastercard'})}
-                  >
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
-                  </div>
-                  <div 
-                    className={`${styles.cardIcon} ${formData.cardType === 'amex' ? styles.active : ''}`}
-                    onClick={() => setFormData({...formData, cardType: 'amex'})}
-                  >
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="American Express" />
-                  </div>
-                  <div 
-                    className={`${styles.cardIcon} ${formData.cardType === 'rupay' ? styles.active : ''}`}
-                    onClick={() => setFormData({...formData, cardType: 'rupay'})}
-                  >
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/RuPay.svg" alt="RuPay" />
-                  </div>
+                <div className={styles.cardTypeIndicator}>
+                  {formData.cardType && (
+                    <div className={styles.detectedCard}>
+                      <span>Detected Card Type:</span>
+                      <div className={styles.cardLogo}>
+                        {formData.cardType === 'visa' && (
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" />
+                        )}
+                        {formData.cardType === 'mastercard' && (
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" />
+                        )}
+                        {formData.cardType === 'amex' && (
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="American Express" />
+                        )}
+                        {formData.cardType === 'rupay' && (
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/RuPay.svg" alt="RuPay" />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div className={styles.formGroup}>
@@ -489,11 +489,14 @@ const PaymentPage = () => {
                       <FaQrcode size={120} />
                       <p>Scan QR with any UPI app</p>
                     </div>
-                    <div className={styles.upiApps}>
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/archive/e/e1/20200901100646%21Google_Pay_%28GPay%29_Logo_%282018-2020%29.svg" alt="Google Pay" title="Google Pay" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/archive/2/24/20200929161457%21Paytm_Logo.svg" alt="Paytm" title="Paytm" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/PhonePe_logo.png" alt="PhonePe" title="PhonePe" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/BHIM_logo.svg" alt="BHIM" title="BHIM" />
+                    <div className={styles.upiAppLinks}>
+                      <p>Pay using:</p>
+                      <ul>
+                        <li><a href="https://pay.google.com/" target="_blank" rel="noopener noreferrer">Google Pay</a></li>
+                        <li><a href="https://paytm.com/" target="_blank" rel="noopener noreferrer">Paytm</a></li>
+                        <li><a href="https://www.phonepe.com/" target="_blank" rel="noopener noreferrer">PhonePe</a></li>
+                        <li><a href="https://www.bhimupi.org.in/" target="_blank" rel="noopener noreferrer">BHIM</a></li>
+                      </ul>
                     </div>
                   </div>
                   
@@ -584,48 +587,6 @@ const PaymentPage = () => {
               </div>
             )}
             
-            {paymentMethod === 'cash' && (
-              <div className={styles.cashPaymentDetails}>
-                <h3><FaMoneyBillWave /> Pay at Hotel</h3>
-                
-                <div className={styles.cashPaymentContent}>
-                  <div className={styles.cashInfoBox}>
-                    <h4>Pay During Check-in</h4>
-                    <p>Your booking will be confirmed, but payment will be collected at the hotel reception during check-in.</p>
-                    
-                    <div className={styles.paymentMethods}>
-                      <p>We accept:</p>
-                      <div className={styles.acceptedMethods}>
-                        <span><FaMoneyBillWave /> Cash</span>
-                        <span><FaCreditCard /> Credit Card</span>
-                        <span><FaRegCreditCard /> Debit Card</span>
-                        <span><FaMobileAlt /> UPI</span>
-                      </div>
-                    </div>
-                    
-                    <div className={styles.importantNote}>
-                      <FaExclamationTriangle /> 
-                      <p>Important: Please carry a valid ID proof and the payment method of your choice.</p>
-                    </div>
-                  </div>
-                  
-                  <div className={styles.formGroup}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="payAtHotel"
-                        checked={formData.payAtHotel}
-                        onChange={handleChange}
-                        disabled={isSubmitting}
-                      />
-                      I agree to pay ₹{total.toLocaleString('en-IN')} at the hotel during check-in
-                    </label>
-                    {fieldErrors.payAtHotel && <span className={styles.errorText}>{fieldErrors.payAtHotel}</span>}
-                  </div>
-                </div>
-              </div>
-            )}
-            
             <button
               type="submit"
               className={styles.payButton}
@@ -633,15 +594,11 @@ const PaymentPage = () => {
             >
               {isSubmitting 
                 ? 'Processing...' 
-                : paymentMethod === 'cash'
-                  ? `Confirm Booking (Pay Later)`
-                  : `Pay ₹${total.toLocaleString('en-IN')}`}
+                : `Pay ₹${total.toLocaleString('en-IN')}`}
             </button>
             
             <div className={styles.securePayment}>
-              <FaShieldAlt /> {paymentMethod === 'cash' 
-                ? 'Your booking is secure and confirmed upon completion' 
-                : 'Your payment is protected with 256-bit SSL encryption'}
+              <FaShieldAlt /> Your payment is protected with 256-bit SSL encryption
             </div>
           </form>
         </div>

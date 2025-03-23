@@ -691,6 +691,82 @@
   color: #333;
 }
 
+/* Card Type Detection */
+.cardTypeIndicator {
+  margin-bottom: 2rem;
+}
+
+.detectedCard {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.detectedCard span {
+  font-weight: 600;
+  color: #333;
+}
+
+.cardLogo {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.cardLogo img {
+  max-height: 100%;
+  max-width: 80px;
+  object-fit: contain;
+}
+
+/* UPI App Links */
+.upiAppLinks {
+  margin-top: 1.5rem;
+}
+
+.upiAppLinks p {
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #333;
+}
+
+.upiAppLinks ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.upiAppLinks li {
+  flex: 1;
+  min-width: 100px;
+}
+
+.upiAppLinks a {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  color: #970b0b;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.upiAppLinks a:hover {
+  background-color: #970b0b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(151, 11, 11, 0.2);
+}
+
 @media (max-width: 1200px) {
   .paymentCard {
     width: 95%;

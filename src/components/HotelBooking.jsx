@@ -1,10 +1,10 @@
-import React, { useRef,useState } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
+import React, { useRef, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './HotelBooking.module.css';
 import hotelIllustration from '../assets/images/Booking_p.png';
 import indianFlag from '../assets/images/india-flag.svg';
 import { db } from '../firebase';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, query, where, getDocs } from 'firebase/firestore';
 import Footer from './Footer';
 import BookingAlert from './BookingAlert';
 import Header from './Header';
@@ -21,18 +21,48 @@ const HotelBooking = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [bookingId, setBookingId] = useState('');
   const [bookingData, setBookingData] = useState(null);
+  const [userVerified, setUserVerified] = useState(false);
+  const [userNotFound, setUserNotFound] = useState(false);
 
   const [formData, setFormData] = useState({
     roomType: selectedRoom.name || 'Master Suite',
     checkInDate: '',
-    checkInTime: '10:00',
     checkOutDate: '',
     numberOfGuests: '2',
+    username: '',
     firstName: '',
     lastName: '',
     phone: '',
-    email: ''
+    email: '',
   });
+
+  // Get max guests based on room type
+  const getMaxGuests = (roomType) => {
+    switch(roomType) {
+      case 'Master Suite':
+        return 4;
+      case 'Honeymoon Suite':
+        return 2;
+      case 'Deluxe Room':
+        return 3;
+      case 'Standard Room':
+        return 3;
+      default:
+        return 2;
+    }
+  };
+
+  // Update number of guests options when room type changes
+  useEffect(() => {
+    // Reset number of guests if it exceeds the maximum for the selected room
+    const maxGuests = getMaxGuests(formData.roomType);
+    if (parseInt(formData.numberOfGuests) > maxGuests) {
+      setFormData(prev => ({
+        ...prev,
+        numberOfGuests: maxGuests.toString()
+      }));
+    }
+  }, [formData.roomType]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,9 +85,54 @@ const HotelBooking = () => {
     }));
   };
 
+  // Function to verify user and auto-fill data
+  const verifyUser = async () => {
+    if (!formData.username) {
+      setError('Please enter a username');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Query Firestore to find user by username
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('username', '==', formData.username.toLowerCase()));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        setUserNotFound(true);
+        setUserVerified(false);
+        setError('User not found. Please check your username or register first.');
+      } else {
+        // Get the user data
+        const userData = querySnapshot.docs[0].data();
+        setFormData(prev => ({
+          ...prev,
+          firstName: userData.firstName || '',
+          lastName: userData.lastName || '',
+          phone: userData.phone || '',
+          email: userData.email || '',
+        }));
+        setUserVerified(true);
+        setUserNotFound(false);
+        setError('');
+      }
+    } catch (err) {
+      console.error('Error verifying user:', err);
+      setError('Error verifying user. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Clear any previous errors
+    
+    if (!userVerified) {
+      setError('Please verify your username first');
+      return;
+    }
     
     if (formData.phone.length !== 10) {
       setError('Please enter a valid 10-digit phone number');
@@ -75,9 +150,9 @@ const HotelBooking = () => {
       const bookingData = {
         roomType: formData.roomType || 'Standard Room',
         checkInDate: formData.checkInDate,
-        checkInTime: formData.checkInTime,
         checkOutDate: formData.checkOutDate,
         numberOfGuests: parseInt(formData.numberOfGuests),
+        username: formData.username,
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
@@ -111,6 +186,20 @@ const HotelBooking = () => {
   const handleCloseAlert = () => {
     setShowAlert(false);
     navigate('/accommodation');
+  };
+
+  // Generate guest options based on room type
+  const renderGuestOptions = () => {
+    const maxGuests = getMaxGuests(formData.roomType);
+    const options = [];
+    
+    for (let i = 1; i <= maxGuests; i++) {
+      options.push(
+        <option key={i} value={i.toString()}>{i}</option>
+      );
+    }
+    
+    return options;
   };
 
   return (
@@ -148,6 +237,12 @@ const HotelBooking = () => {
                 <option value="Standard Room">Standard Room</option>
                 <option value="Honeymoon Suite">Honeymoon Suite</option>
               </select>
+              <div className={styles.fieldHint}>
+                {formData.roomType === 'Master Suite' && 'Maximum 4 guests allowed'}
+                {formData.roomType === 'Honeymoon Suite' && 'Maximum 2 guests allowed'}
+                {formData.roomType === 'Deluxe Room' && 'Maximum 3 guests allowed'}
+                {formData.roomType === 'Standard Room' && 'Maximum 3 guests allowed'}
+              </div>
             </div>
 
             <div className={styles.formRow}>
@@ -162,24 +257,8 @@ const HotelBooking = () => {
                   disabled={isSubmitting}
                   required
                 />
+                <div className={styles.fieldHint}>Check-in time is 11:00 AM</div>
               </div>
-              <div className={styles.formGroup}>
-                <label>Check-in time</label>
-                <input
-                  type="time"
-                  name="checkInTime"
-                  value={formData.checkInTime}
-                  onChange={handleChange}
-                  min="10:00"
-                  max="20:00"
-                  step="1800"
-                  disabled={isSubmitting}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label>Check-out date</label>
                 <input
@@ -191,26 +270,52 @@ const HotelBooking = () => {
                   disabled={isSubmitting}
                   required
                 />
+                <div className={styles.fieldHint}>Check-out time is 12:00 PM</div>
               </div>
-              <div className={styles.formGroup}>
-                <label>Number of guests</label>
-                <select
-                  name="numberOfGuests"
-                  value={formData.numberOfGuests}
-                  onChange={handleChange}
-                  disabled={isSubmitting}
-                  required
-                >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                </select>
-              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Number of guests</label>
+              <select
+                name="numberOfGuests"
+                value={formData.numberOfGuests}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+              >
+                {renderGuestOptions()}
+              </select>
             </div>
 
             <h2>Personal Information</h2>
             
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label>Username</label>
+                <div className={styles.usernameVerifyContainer}>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    disabled={isSubmitting || userVerified}
+                    required
+                    placeholder="Enter your registered username"
+                  />
+                  <button 
+                    type="button" 
+                    onClick={verifyUser} 
+                    disabled={isSubmitting || userVerified}
+                    className={styles.verifyButton}
+                  >
+                    {isSubmitting ? 'Verifying...' : 'Verify'}
+                  </button>
+                </div>
+                {userVerified && <div className={styles.verifiedText}>✓ User verified</div>}
+                {userNotFound && <div className={styles.errorText}>User not found. Please register first.</div>}
+              </div>
+            </div>
+
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label>First name</label>
@@ -219,7 +324,8 @@ const HotelBooking = () => {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !userVerified}
+                  readOnly={userVerified}
                   required
                 />
               </div>
@@ -230,13 +336,26 @@ const HotelBooking = () => {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !userVerified}
+                  readOnly={userVerified}
                   required
                 />
               </div>
             </div>
 
             <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={isSubmitting || !userVerified}
+                  readOnly={userVerified}
+                  required
+                />
+              </div>
               <div className={styles.formGroup}>
                 <label>Phone</label>
                 <div className={styles.phoneInputContainer} title="Enter Indian mobile number">
@@ -252,7 +371,8 @@ const HotelBooking = () => {
                     placeholder="Enter 10-digit number"
                     maxLength="10"
                     pattern="[0-9]{10}"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !userVerified}
+                    readOnly={userVerified}
                     required
                   />
                 </div>
@@ -262,23 +382,12 @@ const HotelBooking = () => {
                   </span>
                 )}
               </div>
-              <div className={styles.formGroup}>
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={isSubmitting}
-                  required
-                />
-              </div>
             </div>
 
             <button 
               type="submit" 
               className={styles.submitButton}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !userVerified}
             >
               {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
             </button>
