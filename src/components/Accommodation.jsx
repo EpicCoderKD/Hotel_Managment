@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./Accommodation.module.css";
 import Standard from "../assets/images/Standard.jpg";
 import Deluxe from "../assets/images/Deluxe.jpg";
@@ -7,10 +7,60 @@ import Master from "../assets/images/Master_Suite.jpg";
 import Honeymoon from "../assets/images/honeymoon-suite.jpg";
 import Footer from './Footer';
 import Header from './Header';
+import { db } from '../firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const Accommodation = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const [roomAvailability, setRoomAvailability] = useState({
+    "Standard Room": { total: 30, available: 30 }, 
+    "Deluxe Room": { total: 25, available: 25 },
+    "Master Suite": { total: 25, available: 25 },
+    "Honeymoon Suite": { total: 20, available: 20 }
+  });
+
+  // Fetch room availability from Firestore
+  useEffect(() => {
+    const fetchRoomAvailability = async () => {
+      try {
+        const bookingsRef = collection(db, 'bookings');
+        const bookingsSnapshot = await getDocs(query(bookingsRef, where('status', 'in', ['confirmed', 'pending'])));
+        
+        // Count booked rooms by type
+        const bookedRooms = {
+          "Standard Room": 0,
+          "Deluxe Room": 0,
+          "Master Suite": 0,
+          "Honeymoon Suite": 0
+        };
+
+        // Count booked rooms from active bookings
+        bookingsSnapshot.forEach((doc) => {
+          const booking = doc.data();
+          if (booking.roomType) {
+            bookedRooms[booking.roomType] = (bookedRooms[booking.roomType] || 0) + 1;
+          }
+        });
+
+        console.log('Booked rooms:', bookedRooms); // Debug log
+        
+        // Update availability
+        const updatedAvailability = {
+          "Standard Room": { total: 30, available: Math.max(0, 30 - bookedRooms["Standard Room"]) },
+          "Deluxe Room": { total: 25, available: Math.max(0, 25 - bookedRooms["Deluxe Room"]) },
+          "Master Suite": { total: 25, available: Math.max(0, 25 - bookedRooms["Master Suite"]) },
+          "Honeymoon Suite": { total: 20, available: Math.max(0, 20 - bookedRooms["Honeymoon Suite"]) }
+        };
+
+        console.log('Updated availability:', updatedAvailability); // Debug log
+        setRoomAvailability(updatedAvailability);
+      } catch (error) {
+        console.error('Error fetching room availability:', error);
+      }
+    };
+
+    fetchRoomAvailability();
+  }, []);
 
   const rooms = [
     {
@@ -93,6 +143,9 @@ const Accommodation = () => {
               <div className={styles.imageContainer}>
                 <img src={room.image} alt={room.name} />
                 <span className={styles.price}>{room.price}</span>
+                <div className={styles.availabilityBadge}>
+                  {roomAvailability[room.name]?.available} / {roomAvailability[room.name]?.total} Available
+                </div>
               </div>
               <div className={styles.roomInfo}>
                 <h2>{room.name}</h2>
@@ -106,10 +159,11 @@ const Accommodation = () => {
                   </ul>
                 </div>
                 <button
-                  className={styles.bookButton}
-                  onClick={() => navigate("/hotelbooking", { state: { room } })}
+                  className={`${styles.bookButton} ${roomAvailability[room.name]?.available === 0 ? styles.disabledButton : ''}`}
+                  onClick={() => roomAvailability[room.name]?.available > 0 && navigate("/hotelbooking", { state: { room, availability: roomAvailability[room.name] } })}
+                  disabled={roomAvailability[room.name]?.available === 0}
                 >
-                  Book Now
+                  {roomAvailability[room.name]?.available === 0 ? 'Fully Booked' : 'Book Now'}
                 </button>
               </div>
             </div>

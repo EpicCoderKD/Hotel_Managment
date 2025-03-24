@@ -1,17 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import styles from './PaymentPage.module.css';
-import Header from './Header';
-import Footer from './Footer';
-import { FaLock, FaCreditCard, FaRegCreditCard, FaExclamationTriangle, FaCalendarAlt, FaShieldAlt, 
-  FaMobileAlt, FaUniversity, FaQrcode, FaCheck, FaSpinner, FaDownload } from 'react-icons/fa';
-import { db } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
-import BookingAlert from './BookingAlert';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-import parthupiQR from '../assets/images/Parthupi.jpg';
-
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import styles from "./PaymentPage.module.css";
+import { db } from "../firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { 
+  FaCreditCard, 
+  FaMoneyBillWave, 
+  FaMobile,
+  FaCheck, 
+  FaDownload, 
+  FaEnvelope, 
+  FaSpinner,
+  FaExclamationTriangle,
+  FaQrcode,
+  FaUniversity,
+  FaRegCreditCard,
+  FaCalendarAlt,
+  FaMobileAlt,
+  FaShieldAlt
+} from "react-icons/fa";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import Header from "./Header";
+import Footer from "./Footer";
+import BookingAlert from "./BookingAlert";
+import parthupiQR from "../assets/images/Parthupi.jpg";
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -22,6 +35,9 @@ const PaymentPage = () => {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentId, setPaymentId] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailSending, setEmailSending] = useState(false);
   
   // Calculate room price (assuming price format is "₹5000/night")
   const roomPrice = bookingData?.roomDetails?.price 
@@ -48,10 +64,10 @@ const PaymentPage = () => {
     expiryYear: '',
     cvv: '',
     saveCard: false,
-    
+
     // UPI details
     upiId: '',
-    
+
     // Net Banking details
     bankName: ''
   });
@@ -119,12 +135,23 @@ const PaymentPage = () => {
         errors.nameOnCard = 'Name on card is required';
       }
       
-      // Validate card number
+      // Validate card number format based on card type
       const cardNumber = formData.cardNumber.replace(/\s/g, '');
-      if (!cardNumber) {
-        errors.cardNumber = 'Card number is required';
-      } else if (!/^\d{16}$/.test(cardNumber)) {
-        errors.cardNumber = 'Card number must be 16 digits';
+      let isValid = false;
+
+      if (formData.cardType === 'visa') {
+        isValid = /^4[0-9]{12}(?:[0-9]{3})?$/.test(cardNumber);
+      } else if (formData.cardType === 'mastercard') {
+        isValid = /^5[1-5][0-9]{14}$/.test(cardNumber);
+      } else if (formData.cardType === 'amex') {
+        isValid = /^3[47][0-9]{13}$/.test(cardNumber);
+      } else if (formData.cardType === 'discover') {
+        isValid = /^6(?:011|5[0-9]{2})[0-9]{12}$/.test(cardNumber);
+      }
+
+      if (!isValid) {
+        setError('Invalid card number for selected card type');
+        return;
       }
       
       // Validate expiry date
@@ -176,6 +203,10 @@ const PaymentPage = () => {
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 2000));
       
+      // Generate a unique payment ID
+      const generatedPaymentId = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+      setPaymentId(generatedPaymentId);
+      
       // If bookingId exists, update the booking status in Firestore
       if (bookingId) {
         const bookingRef = doc(db, 'bookings', bookingId);
@@ -195,17 +226,13 @@ const PaymentPage = () => {
           paymentStatus: 'paid',
           paymentDate: new Date(),
           paymentAmount: total,
-          paymentMethod: paymentDetails
+          paymentMethod: paymentDetails,
+          paymentId: generatedPaymentId
         });
       }
       
       setPaymentSuccess(true);
       setShowSuccessAlert(true);
-      
-      // Navigate after 3 seconds
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
     } catch (error) {
       console.error('Payment error:', error);
       setError('Payment processing failed. Please try again.');
@@ -259,64 +286,110 @@ const PaymentPage = () => {
   const generateReceipt = () => {
     const doc = new jsPDF();
     
-    // Add Solace Stay logo and header
-    doc.setFontSize(22);
-    doc.setTextColor(151, 11, 11); // #970b0b
+    // Add hotel logo/name
+    doc.setFontSize(24);
+    doc.setTextColor(128, 0, 0);
     doc.text('Solace Stay', 105, 20, { align: 'center' });
     
-    doc.setFontSize(16);
+    // Add receipt title
+    doc.setFontSize(18);
     doc.setTextColor(0, 0, 0);
-    doc.text('Payment Receipt', 105, 30, { align: 'center' });
+    doc.text('Payment Receipt', 105, 35, { align: 'center' });
     
-    // Add receipt details
+    // Add receipt number and date
     doc.setFontSize(12);
-    doc.text(`Receipt No: ${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`, 20, 45);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 55);
-    doc.text(`Time: ${new Date().toLocaleTimeString()}`, 20, 65);
+    doc.text(`Receipt #: ${paymentId}`, 20, 50);
+    doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, 20, 60);
+    
+    // Add guest information
+    doc.setFontSize(14);
+    doc.setTextColor(128, 0, 0);
+    doc.text('Guest Information', 20, 80);
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Name: ${bookingData?.firstName || ''} ${bookingData?.lastName || ''}`, 20, 90);
+    doc.text(`Email: ${bookingData?.email || 'N/A'}`, 20, 100);
     
     // Add booking details
     doc.setFontSize(14);
-    doc.text('Booking Details', 20, 80);
-    
+    doc.setTextColor(128, 0, 0);
+    doc.text('Booking Details', 20, 120);
     doc.setFontSize(12);
-    doc.text(`Guest Name: ${bookingData.firstName} ${bookingData.lastName}`, 20, 90);
-    doc.text(`Email: ${bookingData.email}`, 20, 100);
-    doc.text(`Room Type: ${bookingData.roomType}`, 20, 110);
-    doc.text(`Check-in: ${bookingData.checkInDate}`, 20, 120);
-    doc.text(`Check-out: ${bookingData.checkOutDate}`, 20, 130);
-    doc.text(`Guests: ${bookingData.adults} Adults, ${bookingData.children} Children`, 20, 140);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Room Type: ${bookingData?.roomDetails?.name || bookingData?.roomType || 'Standard Room'}`, 20, 130);
+    doc.text(`Check-in: ${formatDate(bookingData?.checkInDate)}`, 20, 140);
+    doc.text(`Check-out: ${formatDate(bookingData?.checkOutDate)}`, 20, 150);
+    doc.text(`Guests: ${bookingData?.adults || bookingData?.numberOfGuests || '2'} Adults, ${bookingData?.children || '0'} Children`, 20, 160);
     
     // Add payment details
     doc.setFontSize(14);
-    doc.text('Payment Details', 20, 160);
+    doc.setTextColor(128, 0, 0);
+    doc.text('Payment Summary', 20, 190);
     
-    doc.setFontSize(12);
-    doc.text(`Payment Method: ${paymentMethod === 'card' ? `${formData.cardCategory.charAt(0).toUpperCase() + formData.cardCategory.slice(1)} Card (${formData.cardType.toUpperCase()})` : 
-      paymentMethod === 'upi' ? 'UPI' : 
-      paymentMethod === 'netbanking' ? `Net Banking (${formData.bankName})` : 'Unknown'}`, 20, 170);
-    
-    // Add payment summary table
-    doc.autoTable({
-      startY: 180,
+    // Create payment summary table
+    autoTable(doc, {
+      startY: 200,
       head: [['Description', 'Amount']],
       body: [
-        ['Room Charges', `₹${bookingData.roomPrice}`],
-        ['Taxes (18% GST)', `₹${Math.round(bookingData.roomPrice * 0.18)}`],
-        ['Total Amount', `₹${bookingData.totalAmount}`]
+        ['Room Rate', `₹${roomPrice.toLocaleString('en-IN')}/night`],
+        [`Room Total (${nights} nights)`, `₹${subtotal.toLocaleString('en-IN')}`],
+        ['Taxes (18% GST)', `₹${tax.toLocaleString('en-IN')}`],
+        ['Total Amount', `₹${total.toLocaleString('en-IN')}`]
       ],
       theme: 'grid',
-      headStyles: { fillColor: [151, 11, 11] },
+      headStyles: { fillColor: [128, 0, 0] },
       margin: { left: 20, right: 20 }
     });
     
+    // Add payment method
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    const finalY = doc.lastAutoTable.finalY + 20;
+    doc.text(`Payment Method: ${getPaymentMethodText()}`, 20, finalY);
+    doc.text(`Payment ID: ${paymentId}`, 20, finalY + 10);
+    
     // Add footer
-    const pageHeight = doc.internal.pageSize.height;
     doc.setFontSize(10);
-    doc.text('Thank you for choosing Solace Stay!', 105, pageHeight - 30, { align: 'center' });
-    doc.text('For any queries, please contact us at support@solacestay.com', 105, pageHeight - 20, { align: 'center' });
+    doc.setTextColor(128, 128, 128);
+    doc.text('Thank you for choosing Solace Stay!', 105, finalY + 30, { align: 'center' });
     
     // Save the PDF
     doc.save('Solace_Stay_Payment_Receipt.pdf');
+  };
+
+  // Function to send receipt via email (simulated)
+  const sendReceiptByEmail = async () => {
+    if (!bookingData?.email) {
+      alert('No email address available to send receipt.');
+      return;
+    }
+    
+    setEmailSending(true);
+    try {
+      // Simulate email sending with a delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // In a real implementation, you would call an API to send the email
+      // For now, we'll just simulate success
+      
+      setEmailSent(true);
+      alert(`Receipt has been sent to ${bookingData.email}. Please check your inbox.`);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Failed to send receipt via email. Please try again or download the PDF.');
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
+  const getPaymentMethodText = () => {
+    if (paymentMethod === 'card') {
+      return `${formData.cardCategory.charAt(0).toUpperCase() + formData.cardCategory.slice(1)} Card (${formData.cardType.toUpperCase()})`;
+    } else if (paymentMethod === 'upi') {
+      return `UPI (${formData.upiId})`;
+    } else if (paymentMethod === 'netbanking') {
+      return `Net Banking (${formData.bankName})`;
+    }
   };
 
   if (!bookingData && !location.state) {
@@ -707,13 +780,34 @@ const PaymentPage = () => {
           <FaCheck className={styles.successIcon} />
           <h2>Payment Successful!</h2>
           <p>Your booking has been confirmed. Check your email for details.</p>
+          <p className={styles.paymentId}>Payment ID: {paymentId}</p>
           <div className={styles.receiptButton}>
             <button onClick={generateReceipt} className={styles.downloadBtn}>
-              <FaDownload /> Download Receipt
+              <FaDownload /> Download Payment Receipt
+            </button>
+            <button 
+              onClick={sendReceiptByEmail} 
+              className={styles.emailBtn}
+              disabled={emailSending || emailSent}
+            >
+              {emailSending ? (
+                <>
+                  <FaSpinner className={styles.spinnerIcon} /> Sending Email...
+                </>
+              ) : emailSent ? (
+                <>
+                  <FaCheck /> Email Sent
+                </>
+              ) : (
+                <>
+                  <FaEnvelope /> Send Receipt via Email
+                </>
+              )}
             </button>
           </div>
-          <button onClick={() => navigate('/')} className={styles.homeButton}>
-            Return to Home
+          <p className={styles.downloadNote}>Please download your receipt before continuing</p>
+          <button onClick={() => navigate('/')} className={styles.okButton}>
+            OK
           </button>
         </div>
       )}
