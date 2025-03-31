@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
-import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import styles from './AdminDashboard.module.css';
+import { initializeStaffData } from '../utils/initializeStaffData';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -25,30 +26,44 @@ const AdminDashboard = () => {
     feedback: [],
     payments: []
   });
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSalary, setEditedSalary] = useState('');
 
   useEffect(() => {
-    const checkAdmin = () => {
+    const checkAdminAndLoadData = async () => {
       const adminUser = JSON.parse(localStorage.getItem('adminUser'));
       if (!adminUser || adminUser.email !== 'Admin.solacestay@gmail.com') {
         navigate('/admin-login');
         return;
       }
+
+      // Check if staff data exists in localStorage
+      const savedStaffData = localStorage.getItem('staffData');
+      if (savedStaffData) {
+        setStaffData(JSON.parse(savedStaffData));
+      } else {
+        // If no saved staff data, initialize it
+        try {
+          setLoading(true);
+          await initializeStaffData();
+          await fetchStaffData();
+        } catch (error) {
+          console.error('Error initializing staff data:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      fetchData(); // Fetch other dashboard data
     };
 
-    checkAdmin();
-    fetchData();
+    checkAdminAndLoadData();
   }, [navigate]);
 
   const fetchData = async () => {
     try {
-      // Fetch staff data
-      const staffSnapshot = await getDocs(collection(db, 'staff'));
-      const staffList = staffSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setStaffData(staffList);
-
       // Fetch overall data
       const bookingsSnapshot = await getDocs(collection(db, 'bookings'));
       const feedbackSnapshot = await getDocs(collection(db, 'feedback'));
@@ -72,6 +87,29 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
+    }
+  };
+
+  const fetchStaffData = async () => {
+    try {
+      console.log('Fetching staff data...');
+      const staffSnapshot = await getDocs(collection(db, 'staff'));
+      console.log('Staff snapshot:', staffSnapshot.docs.length, 'documents found');
+      const staff = staffSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          salary: parseInt(data.salary) || 0
+        };
+      });
+      console.log('Processed staff data:', staff);
+      setStaffData(staff);
+      // Save staff data to localStorage
+      localStorage.setItem('staffData', JSON.stringify(staff));
+    } catch (error) {
+      console.error('Error fetching staff data:', error);
+      alert('Error loading staff data. Please try again.');
     }
   };
 
@@ -341,6 +379,85 @@ const AdminDashboard = () => {
       });
     }
 
+    // Staff Section
+    doc.addPage();
+    doc.text('Staff Information', 14, 15);
+    const staffTableData = staffData.map(staff => [
+      staff.name,
+      staff.designation,
+      staff.branch
+    ]);
+
+    autoTable(doc, {
+      startY: 20,
+      head: [['Name', 'Designation', 'Branch']],
+      body: staffTableData,
+      theme: 'grid',
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: { fillColor: [128, 0, 32] },
+      columnStyles: {
+        0: { cellWidth: 40 }, // Name column width
+        1: { cellWidth: 40 }, // Designation column width
+        2: { cellWidth: 30 }  // Branch column width
+      }
+    });
+
+    // Add staff photos in a grid layout
+    let currentY = doc.lastAutoTable.finalY + 20;
+    const photosPerRow = 3;
+    const photoWidth = 60;
+    const photoHeight = 60;
+    const spacing = 10;
+
+    staffData.forEach((staff, index) => {
+      const row = Math.floor(index / photosPerRow);
+      const col = index % photosPerRow;
+      const x = 14 + (col * (photoWidth + spacing));
+      const y = currentY + (row * (photoHeight + spacing));
+
+      // Add photo
+      doc.addImage(
+        staff.photo,
+        'JPEG',
+        x,
+        y,
+        photoWidth,
+        photoHeight
+      );
+
+      // Add name below photo
+      doc.setFontSize(8);
+      doc.text(
+        staff.name,
+        x + photoWidth/2,
+        y + photoHeight + 5,
+        { align: 'center' }
+      );
+
+      // Add designation below name
+      doc.setFontSize(7);
+      doc.text(
+        staff.designation,
+        x + photoWidth/2,
+        y + photoHeight + 12,
+        { align: 'center' }
+      );
+
+      // Add branch below designation
+      doc.text(
+        staff.branch,
+        x + photoWidth/2,
+        y + photoHeight + 19,
+        { align: 'center' }
+      );
+
+      // Update currentY if we need a new page
+      if (y + photoHeight + 30 > 280) {
+        doc.addPage();
+        currentY = 20;
+      }
+    });
+
     // Summary Section
     doc.addPage();
     doc.text('Summary', 14, 15);
@@ -388,8 +505,86 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
+    // Clear all session data
     localStorage.removeItem('adminUser');
-    navigate('/admin-login');
+    localStorage.removeItem('staffData');
+    // Navigate to home page
+    navigate('/');
+  };
+
+  const handleInitializeStaffData = async () => {
+    try {
+      setLoading(true);
+      await initializeStaffData();
+      await fetchStaffData();
+      alert('Staff data initialized successfully!');
+    } catch (error) {
+      console.error('Error initializing staff data:', error);
+      alert('Error initializing staff data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to handle staff profile click
+  const handleStaffClick = async (staff) => {
+    try {
+      const staffDoc = await getDoc(doc(db, 'staff', staff.id));
+      if (staffDoc.exists()) {
+        const data = staffDoc.data();
+        setSelectedStaff({ 
+          ...staff, 
+          ...data,
+          salary: parseInt(data.salary) || 0 // Ensure salary is a number
+        });
+      } else {
+        setSelectedStaff({
+          ...staff,
+          salary: parseInt(staff.salary) || 0 // Ensure salary is a number
+        });
+      }
+      setShowProfile(true);
+    } catch (error) {
+      console.error('Error fetching staff details:', error);
+      alert('Error loading staff details. Please try again.');
+    }
+  };
+
+  // Function to close profile
+  const handleCloseProfile = () => {
+    setShowProfile(false);
+    setSelectedStaff(null);
+  };
+
+  // Add function to handle salary update
+  const handleSalaryUpdate = async (staffId) => {
+    try {
+      const newSalary = parseInt(editedSalary);
+      if (isNaN(newSalary) || newSalary < 0) {
+        alert('Please enter a valid salary amount');
+        return;
+      }
+
+      const staffRef = doc(db, 'staff', staffId);
+      await updateDoc(staffRef, {
+        salary: newSalary
+      });
+
+      // Update local state
+      setStaffData(prevStaff => 
+        prevStaff.map(staff => 
+          staff.id === staffId 
+            ? { ...staff, salary: newSalary }
+            : staff
+        )
+      );
+      setSelectedStaff(prev => ({ ...prev, salary: newSalary }));
+      setIsEditing(false);
+      alert('Salary updated successfully!');
+    } catch (error) {
+      console.error('Error updating salary:', error);
+      alert('Error updating salary. Please try again.');
+    }
   };
 
   if (loading) {
@@ -405,9 +600,16 @@ const AdminDashboard = () => {
     <div className={styles.dashboardContainer}>
       <header className={styles.header}>
         <h1>Admin Dashboard</h1>
-        <button onClick={handleLogout} className={styles.logoutButton}>
-          Logout
-        </button>
+        <div className={styles.headerButtons}>
+          {staffData.length === 0 && (
+            <button onClick={handleInitializeStaffData} className={styles.initializeButton}>
+              Initialize Staff Data
+            </button>
+          )}
+          <button onClick={handleLogout} className={styles.logoutButton}>
+            Logout
+          </button>
+        </div>
       </header>
 
       <div className={styles.tabContainer}>
@@ -431,20 +633,179 @@ const AdminDashboard = () => {
             <h2>Staff Information</h2>
             <div className={styles.staffGrid}>
               {staffData.map(staff => (
-                <div key={staff.id} className={styles.staffCard}>
+                <div 
+                  key={staff.id} 
+                  className={styles.staffCard}
+                  onClick={() => handleStaffClick(staff)}
+                >
+                  <img 
+                    src={staff.photo} 
+                    alt={staff.name} 
+                    className={styles.staffPhoto}
+                  />
                   <div className={styles.staffHeader}>
                     <h3>{staff.name}</h3>
-                    <span className={styles.staffRole}>{staff.role}</span>
+                    <span className={styles.staffRole}>{staff.designation}</span>
                   </div>
                   <div className={styles.staffInfo}>
-                    <p><strong>Email:</strong> {staff.email}</p>
-                    <p><strong>Phone:</strong> {staff.phone}</p>
-                    <p><strong>Department:</strong> {staff.department}</p>
-                    <p><strong>Shift:</strong> {staff.shift}</p>
+                    <p><strong>Branch:</strong> {staff.branch}</p>
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Staff Profile Modal */}
+            {showProfile && selectedStaff && (
+              <div className={styles.profileModal}>
+                <div className={styles.profileContent}>
+                  <button className={styles.closeButton} onClick={handleCloseProfile}>
+                    ×
+                  </button>
+                  <div className={styles.profileHeader}>
+                    <img 
+                      src={selectedStaff.photo} 
+                      alt={selectedStaff.name} 
+                      className={styles.profilePhoto}
+                    />
+                    <div className={styles.profileTitle}>
+                      <h2>{selectedStaff.name}</h2>
+                      <p className={styles.profileDesignation}>{selectedStaff.designation}</p>
+                    </div>
+                  </div>
+                  <div className={styles.profileDetails}>
+                    <div className={styles.detailSection}>
+                      <h3>Personal Information</h3>
+                      <div className={styles.detailGrid}>
+                        <div className={styles.detailItem}>
+                          <label>Age</label>
+                          <span>{selectedStaff.age} years</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Gender</label>
+                          <span>{selectedStaff.gender}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Blood Group</label>
+                          <span>{selectedStaff.bloodGroup}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.detailSection}>
+                      <h3>Contact Information</h3>
+                      <div className={styles.detailGrid}>
+                        <div className={styles.detailItem}>
+                          <label>Email</label>
+                          <span>{selectedStaff.email}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Phone</label>
+                          <span>{selectedStaff.phone}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Emergency Contact</label>
+                          <span>{selectedStaff.emergencyContact}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.detailSection}>
+                      <h3>Address</h3>
+                      <div className={styles.detailGrid}>
+                        <div className={styles.detailItem}>
+                          <label>Address</label>
+                          <span>{selectedStaff.address}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>City</label>
+                          <span>{selectedStaff.city}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>State</label>
+                          <span>{selectedStaff.state}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.detailSection}>
+                      <h3>Professional Details</h3>
+                      <div className={styles.detailGrid}>
+                        <div className={styles.detailItem}>
+                          <label>Department</label>
+                          <span>{selectedStaff.department}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Branch</label>
+                          <span>{selectedStaff.branch}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Shift</label>
+                          <span>{selectedStaff.shift}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Joining Date</label>
+                          <span>{selectedStaff.joiningDate}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Education</label>
+                          <span>{selectedStaff.education}</span>
+                        </div>
+                        <div className={styles.detailItem}>
+                          <label>Experience</label>
+                          <span>{selectedStaff.experience}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.detailSection}>
+                      <h3>Salary Information</h3>
+                      <div className={styles.salaryContainer}>
+                        {isEditing ? (
+                          <div className={styles.salaryEdit}>
+                            <input
+                              type="number"
+                              value={editedSalary}
+                              onChange={(e) => setEditedSalary(e.target.value)}
+                              className={styles.salaryInput}
+                              placeholder="Enter new salary"
+                            />
+                            <div className={styles.salaryButtons}>
+                              <button
+                                onClick={() => handleSalaryUpdate(selectedStaff.id)}
+                                className={styles.saveButton}
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setIsEditing(false);
+                                  setEditedSalary('');
+                                }}
+                                className={styles.cancelButton}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className={styles.salaryDisplay}>
+                            <div className={styles.detailItem}>
+                              <label>Current Salary</label>
+                              <span>₹{(selectedStaff.salary || 0).toLocaleString('en-IN')}/month</span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setEditedSalary(selectedStaff.salary ? selectedStaff.salary.toString() : '0');
+                                setIsEditing(true);
+                              }}
+                              className={styles.editButton}
+                            >
+                              Edit Salary
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className={styles.overallContainer}>
