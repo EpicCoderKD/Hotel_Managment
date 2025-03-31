@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '../firebase';
+import { db } from '../firebase';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     averageRating: 0,
     totalFeedback: 0
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [detailedData, setDetailedData] = useState({
@@ -27,25 +27,16 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
-      if (!currentUser) {
-        console.log('No user found, redirecting to login');
+    const checkAdmin = () => {
+      const adminUser = JSON.parse(localStorage.getItem('adminUser'));
+      if (!adminUser || adminUser.email !== 'Admin.solacestay@gmail.com') {
         navigate('/admin-login');
         return;
       }
-      
-      if (currentUser.email !== 'Admin.solacestay@gmail.com') {
-        console.log('Not an admin user, redirecting to login');
-        await auth.signOut();
-        navigate('/admin-login');
-        return;
-      }
+    };
 
-      console.log('Admin authenticated:', currentUser.email);
-      fetchData();
-    });
-
-    return () => unsubscribe();
+    checkAdmin();
+    fetchData();
   }, [navigate]);
 
   const fetchData = async () => {
@@ -396,15 +387,9 @@ const AdminDashboard = () => {
     return average.toFixed(1);
   };
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      console.log('Admin signed out successfully');
-      navigate('/admin-login');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      alert('Error signing out. Please try again.');
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('adminUser');
+    navigate('/admin-login');
   };
 
   if (loading) {

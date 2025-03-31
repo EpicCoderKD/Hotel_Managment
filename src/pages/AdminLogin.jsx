@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import styles from './AdminLogin.module.css';
 
 const AdminLogin = () => {
@@ -10,7 +8,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     try {
       // Check for admin credentials
@@ -20,7 +18,6 @@ const AdminLogin = () => {
           email: email,
           isAdmin: true
         }));
-        
         navigate('/admin-dashboard');
       } else {
         setError('Invalid admin credentials');
@@ -31,23 +28,27 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className={styles.adminLoginContainer}>
-      <div className={styles.adminLoginBox}>
+    <div className={styles.container}>
+      <div className={styles.loginBox}>
         <h2>Admin Login</h2>
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <div className={styles.error}>{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
+          <div className={styles.formGroup}>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
+              id="email"
               placeholder="Admin Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className={styles.inputGroup}>
+          <div className={styles.formGroup}>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
+              id="password"
               placeholder="Admin Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -58,11 +59,11 @@ const AdminLogin = () => {
             Login as Admin
           </button>
         </form>
-        <p className={styles.backLink}>
+        <div className={styles.backLink}>
           <button onClick={() => navigate('/login')} className={styles.backButton}>
             Back to User Login
           </button>
-        </p>
+        </div>
       </div>
     </div>
   );
