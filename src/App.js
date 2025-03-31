@@ -7,6 +7,8 @@ import Register from './components/Register';
 import PaymentPage from './components/PaymentPage';
 import Login from './components/Login';
 import Feedback from './pages/Feedback';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -23,6 +25,8 @@ function App() {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/feedback" element={<Feedback />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Routes>
       </div>
     </Router>
