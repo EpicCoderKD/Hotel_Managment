@@ -570,4 +570,102 @@
   .cancelButton {
     width: 100%;
   }
+}
+
+/* Theme Button */
+.themeButton {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.themeButton:hover {
+  background-color: #5a6268;
+}
+
+/* Dark Mode Styles */
+:global([data-theme="dark"]) .dashboardContainer {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .header {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+:global([data-theme="dark"]) .header h1 {
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .tabContainer {
+  background-color: #2d2d2d;
+}
+
+:global([data-theme="dark"]) .tab {
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .tab.active {
+  background-color: #800020;
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .staffCard {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+:global([data-theme="dark"]) .staffHeader {
+  background-color: #800020;
+}
+
+:global([data-theme="dark"]) .staffInfo {
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .profileContent {
+  background-color: #2d2d2d;
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .detailSection {
+  background-color: #1a1a1a;
+}
+
+:global([data-theme="dark"]) .detailItem label {
+  color: #cccccc;
+}
+
+:global([data-theme="dark"]) .detailItem span {
+  color: #ffffff;
+}
+
+:global([data-theme="dark"]) .salaryContainer {
+  background-color: #1a1a1a;
+}
+
+:global([data-theme="dark"]) .salaryInput {
+  background-color: #2d2d2d;
+  color: #ffffff;
+  border-color: #404040;
+}
+
+:global([data-theme="dark"]) .salaryInput::placeholder {
+  color: #808080;
+}
+
+/* Responsive adjustments for dark mode */
+@media (max-width: 768px) {
+  :global([data-theme="dark"]) .headerButtons {
+    background-color: #2d2d2d;
+  }
 } 

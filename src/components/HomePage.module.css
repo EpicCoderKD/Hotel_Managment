@@ -5,6 +5,91 @@
   color: #000000;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode Styles */
+.darkMode {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.darkMode .heroContent {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.darkMode .hero h1,
+.darkMode .hero p {
+  color: #ffffff;
+}
+
+.darkMode .accommodationsSection {
+  background-color: #2d2d2d;
+}
+
+.darkMode .accommodationsIntro {
+  color: #cccccc;
+}
+
+.darkMode .roomCard {
+  background-color: #2d2d2d;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.darkMode .roomTitle {
+  color: #ffffff;
+}
+
+.darkMode .servicesContainer {
+  background-color: #2d2d2d;
+}
+
+.darkMode .servicesTitle {
+  color: #ffffff;
+}
+
+.darkMode .serviceIcon {
+  color: #ffffff;
+}
+
+.darkMode .serviceTitle {
+  color: #cccccc;
+}
+
+.darkMode .storySection {
+  background-color: #2d2d2d;
+}
+
+.darkMode .storyText {
+  color: #ffffff;
+}
+
+.darkMode .storyText h3 {
+  color: #ff6b6b;
+}
+
+.darkMode .storyText p {
+  color: #cccccc;
+}
+
+.darkMode .aboutSection {
+  background-color: #2d2d2d;
+}
+
+.darkMode .aboutContent {
+  color: #ffffff;
+}
+
+.darkMode .aboutContent p {
+  color: #cccccc;
+}
+
+.darkMode .contactDetails h3 {
+  color: #ff6b6b;
+}
+
+.darkMode .contactDetails p {
+  color: #cccccc;
 }
 
 /* Hero Section */

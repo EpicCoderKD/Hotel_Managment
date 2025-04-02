@@ -9,27 +9,30 @@ import Login from './components/Login';
 import Feedback from './pages/Feedback';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import { ThemeProvider } from './context/ThemeContext';
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/booking" element={<HotelBooking />} />
-          <Route path="/accommodation" element={<Accommodation />} />
-          <Route path="/hotelbooking" element={<HotelBooking />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/feedback" element={<Feedback />} />
-          <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        </Routes>
-      </div>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/booking" element={<HotelBooking />} />
+            <Route path="/accommodation" element={<Accommodation />} />
+            <Route path="/hotelbooking" element={<HotelBooking />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          </Routes>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 

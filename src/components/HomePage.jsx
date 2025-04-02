@@ -11,6 +11,7 @@ import Standard from "../assets/images/Standard.jpg";
 import Deluxe from "../assets/images/Deluxe.jpg";
 import Master from "../assets/images/Master_Suite.jpg";
 import Honeymoon from "../assets/images/honeymoon-suite.jpg";
+import { useTheme } from '../context/ThemeContext';
 
 const HomePage = () => {
   const servicesRef = useRef(null);
@@ -19,6 +20,7 @@ const HomePage = () => {
   const accommodationsRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
 
   // Room data for the accommodations section
   const rooms = [
@@ -66,7 +68,7 @@ const HomePage = () => {
   }, [location]);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isDarkMode ? styles.darkMode : ''}`}>
       <Header /> {/* Use Header Component */}
 
       {/* Hero Section */}

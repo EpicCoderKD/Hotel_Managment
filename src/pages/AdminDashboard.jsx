@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import styles from './AdminDashboard.module.css';
 import { initializeStaffData } from '../utils/initializeStaffData';
+import { useTheme } from '../context/ThemeContext';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const AdminDashboard = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedSalary, setEditedSalary] = useState('');
+  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     const checkAdminAndLoadData = async () => {
@@ -606,6 +608,9 @@ const AdminDashboard = () => {
               Initialize Staff Data
             </button>
           )}
+          <button onClick={toggleTheme} className={styles.themeButton}>
+            {isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+          </button>
           <button onClick={handleLogout} className={styles.logoutButton}>
             Logout
           </button>

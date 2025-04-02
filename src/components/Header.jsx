@@ -1,10 +1,12 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
+import { useTheme } from '../context/ThemeContext';
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const handleBookNow = () => {
     navigate("/accommodation");
@@ -34,7 +36,7 @@ const Header = () => {
   const isActive = (path) => (location.pathname === path ? styles.activeNavItem : "");
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${isDarkMode ? styles.darkMode : ''}`}>
       {/* Top Section: Logo & Button */}
       <div className={styles.headerTop}>
         <div className={styles.logoContainer} onClick={() => navigate("/")}>
@@ -42,6 +44,13 @@ const Header = () => {
           <p className={styles.tagline}>Luxury & Comfort</p>
         </div>
         <div className={styles.buttonContainer}>
+          <button 
+            className={styles.themeButton} 
+            onClick={toggleTheme}
+            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
           <button className={styles.registerButton} onClick={handleRegister}>
             REGISTER
           </button>
