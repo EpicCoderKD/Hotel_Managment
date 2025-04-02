@@ -4,7 +4,7 @@ import styles from './HotelBooking.module.css';
 import hotelIllustration from '../assets/images/Booking_p.png';
 import indianFlag from '../assets/images/india-flag.svg';
 import { db } from '../firebase';
-import { collection, doc, setDoc, getDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, query, where, getDocs, updateDoc, serverTimestamp, limit } from 'firebase/firestore';
 import Footer from './Footer';
 import BookingAlert from './BookingAlert';
 import Header from './Header';
@@ -13,7 +13,7 @@ const HotelBooking = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const selectedRoom = location.state?.room || {};
-  const selectedBranch = location.state?.branch || { name: 'Coorg' };
+  const selectedBranch = location.state?.branch || 'coorg';
   const preSelectedCheckInDate = location.state?.checkInDate || '';
   const preSelectedCheckOutDate = location.state?.checkOutDate || '';
   
@@ -27,10 +27,12 @@ const HotelBooking = () => {
   const [bookingData, setBookingData] = useState(null);
   const [userVerified, setUserVerified] = useState(false);
   const [userNotFound, setUserNotFound] = useState(false);
+  const [availableRooms, setAvailableRooms] = useState([]);
+  const [selectedRoomId, setSelectedRoomId] = useState('');
 
   const [formData, setFormData] = useState({
     roomType: selectedRoom.name || 'Master Suite',
-    branch: selectedBranch.name || 'Coorg',
+    branch: selectedBranch,
     checkInDate: preSelectedCheckInDate,
     checkOutDate: preSelectedCheckOutDate,
     adults: '2',
@@ -44,34 +46,19 @@ const HotelBooking = () => {
 
   // Get max guests based on room type
   const getMaxGuests = (roomType) => {
-    switch(roomType) {
+    switch (roomType) {
       case 'Master Suite':
         return 4;
-      case 'Honeymoon Suite':
-        return 2;
       case 'Deluxe Room':
         return 3;
       case 'Standard Room':
         return 3;
+      case 'Honeymoon Suite':
+        return 2;
       default:
         return 2;
     }
   };
-
-  // Update number of guests options when room type changes
-  useEffect(() => {
-    // Reset number of guests if it exceeds the maximum for the selected room
-    const maxGuests = getMaxGuests(formData.roomType);
-    const totalGuests = parseInt(formData.adults) + parseInt(formData.children);
-    
-    if (totalGuests > maxGuests) {
-      setFormData(prev => ({
-        ...prev,
-        adults: Math.min(parseInt(prev.adults), maxGuests).toString(),
-        children: Math.max(0, maxGuests - parseInt(prev.adults)).toString()
-      }));
-    }
-  }, [formData.roomType, formData.adults, formData.children]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,6 +98,18 @@ const HotelBooking = () => {
         setError(`Total guests cannot exceed ${maxGuests} for ${formData.roomType}`);
       }
       return;
+    }
+    
+    // If room type changes, need to recheck availability
+    if (name === 'roomType') {
+      setAvailableRooms([]);
+      setSelectedRoomId('');
+    }
+    
+    // If dates or branch changes, need to recheck availability
+    if (name === 'checkInDate' || name === 'checkOutDate' || name === 'branch') {
+      setAvailableRooms([]);
+      setSelectedRoomId('');
     }
     
     setFormData(prevState => ({
@@ -159,8 +158,8 @@ const HotelBooking = () => {
     }
   };
 
-  // Check room availability for selected dates
-  const checkRoomAvailability = async () => {
+  // Check for available rooms of the selected type
+  const findAvailableRooms = async () => {
     if (!formData.checkInDate || !formData.checkOutDate) {
       setError('Please select both check-in and check-out dates');
       return false;
@@ -176,34 +175,70 @@ const HotelBooking = () => {
 
     try {
       setIsSubmitting(true);
+      setError('');
+      
+      // Query rooms collection for available rooms of the specified type
+      const roomsRef = collection(db, 'rooms');
+      const roomsQuery = query(
+        roomsRef,
+        where('branch', '==', formData.branch),
+        where('roomType', '==', formData.roomType),
+        where('isAvailable', '==', true),
+        where('isBooked', '==', false)
+      );
+      
+      const roomsSnapshot = await getDocs(roomsQuery);
+      
+      // Get all available rooms
+      const allAvailableRooms = roomsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      // Now check if any of these rooms have overlapping bookings
       const bookingsRef = collection(db, 'bookings');
-      const bookingsSnapshot = await getDocs(query(
+      const bookingsQuery = query(
         bookingsRef,
         where('branch', '==', formData.branch),
         where('roomType', '==', formData.roomType),
         where('status', 'in', ['confirmed', 'pending'])
-      ));
-
-      let isAvailable = true;
-      const checkIn = new Date(formData.checkInDate);
-      const checkOut = new Date(formData.checkOutDate);
-
-      bookingsSnapshot.forEach((doc) => {
-        const booking = doc.data();
-        const bookingCheckIn = new Date(booking.checkInDate);
-        const bookingCheckOut = new Date(booking.checkOutDate);
-
-        // Check for date overlap
-        if (
-          (checkIn >= bookingCheckIn && checkIn < bookingCheckOut) ||
-          (checkOut > bookingCheckIn && checkOut <= bookingCheckOut) ||
-          (checkIn <= bookingCheckIn && checkOut >= bookingCheckOut)
-        ) {
-          isAvailable = false;
-        }
+      );
+      
+      const bookingsSnapshot = await getDocs(bookingsQuery);
+      const bookings = bookingsSnapshot.docs.map(doc => doc.data());
+      
+      // Check date overlap for each available room
+      const roomsWithNoOverlap = allAvailableRooms.filter(room => {
+        // Find bookings for this specific room
+        const roomBookings = bookings.filter(booking => 
+          booking.roomId === room.roomId || booking.roomNumber === room.roomNumber
+        );
+        
+        // Check if any booking overlaps with requested dates
+        const hasOverlap = roomBookings.some(booking => {
+          const bookingCheckIn = new Date(booking.checkInDate);
+          const bookingCheckOut = new Date(booking.checkOutDate);
+          
+          return (
+            (inDate >= bookingCheckIn && inDate < bookingCheckOut) ||
+            (outDate > bookingCheckIn && outDate <= bookingCheckOut) ||
+            (inDate <= bookingCheckIn && outDate >= bookingCheckOut)
+          );
+        });
+        
+        return !hasOverlap;
       });
-
-      return isAvailable;
+      
+      setAvailableRooms(roomsWithNoOverlap);
+      
+      if (roomsWithNoOverlap.length > 0) {
+        // Automatically select the first available room
+        setSelectedRoomId(roomsWithNoOverlap[0].id);
+        return true;
+      } else {
+        setError('No rooms available for the selected dates. Please choose different dates or room type.');
+        return false;
+      }
     } catch (error) {
       console.error('Error checking availability:', error);
       setError('Error checking room availability');
@@ -227,15 +262,25 @@ const HotelBooking = () => {
       return;
     }
 
-    // Check room availability before proceeding
-    const isAvailable = await checkRoomAvailability();
-    if (!isAvailable) {
-      setError('This room is not available for the selected dates. Please choose different dates.');
+    // Check for available rooms if we haven't already
+    if (availableRooms.length === 0) {
+      const roomsAvailable = await findAvailableRooms();
+      if (!roomsAvailable) {
+        return;
+      }
+    }
+
+    // Make sure a room is selected
+    if (!selectedRoomId) {
+      setError('No room selected for booking. Please try again.');
       return;
     }
 
     try {
       setIsSubmitting(true);
+      
+      // Get the selected room details
+      const selectedRoom = availableRooms.find(room => room.id === selectedRoomId);
       
       // Create a unique document ID using customer name and timestamp
       const timestamp = new Date().getTime();
@@ -243,7 +288,9 @@ const HotelBooking = () => {
       
       // Format the data properly
       const bookingData = {
-        roomType: formData.roomType || 'Standard Room',
+        roomId: selectedRoom.roomId,
+        roomNumber: selectedRoom.roomNumber,
+        roomType: formData.roomType,
         branch: formData.branch,
         checkInDate: formData.checkInDate,
         checkOutDate: formData.checkOutDate,
@@ -255,23 +302,32 @@ const HotelBooking = () => {
         phone: formData.phone,
         email: formData.email,
         roomDetails: {
-          name: selectedRoom.name || formData.roomType,
-          price: selectedRoom.price || '',
+          name: formData.roomType,
+          price: `₹${selectedRoom.pricePerNight}/night`,
+          pricePerNight: selectedRoom.pricePerNight
         },
         status: 'pending',
-        createdAt: new Date(),
-        bookingDate: new Date(),
+        createdAt: serverTimestamp(),
+        bookingDate: new Date().toISOString(),
       };
 
       // Add to Firestore with custom document ID
       const bookingRef = doc(db, 'bookings', documentId);
       await setDoc(bookingRef, bookingData);
       
+      // Update the room's status in the rooms collection
+      const roomRef = doc(db, 'rooms', selectedRoomId);
+      await updateDoc(roomRef, {
+        isBooked: true,
+        currentBookingId: documentId,
+        lastBookingDate: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      
       setBookingId(documentId);
       setBookingData(bookingData); // Store booking data for payment page
       setShowAlert(true);
       
-      // Don't navigate automatically, let user choose to proceed to payment
     } catch (error) {
       console.error('Error submitting booking:', error);
       setError('Error submitting booking. Please try again.');
@@ -284,6 +340,13 @@ const HotelBooking = () => {
     setShowAlert(false);
     navigate('/accommodation');
   };
+
+  // Check availability when dates and room type are selected
+  useEffect(() => {
+    if (formData.checkInDate && formData.checkOutDate && formData.roomType) {
+      findAvailableRooms();
+    }
+  }, [formData.checkInDate, formData.checkOutDate, formData.roomType, formData.branch]);
 
   // Generate options from 0-max
   const renderOptions = (max, startFrom = 0) => {
@@ -306,35 +369,21 @@ const HotelBooking = () => {
         <h1>Hotel Booking</h1>
         <p>Complete your reservation details</p>
       </header>
-      <div className={styles.formCard}>
-        <div className={styles.leftSection}>
-          <h1>RESERVATION</h1>
-          <p>Please place online reservation at least 3 days<br />in advance by simply completing the form<br />and request booking to us.</p>
-          <div 
-            className={styles.illustration}
-            style={{ backgroundImage: `url(${hotelIllustration})` }}
-          />
-        </div>
-        
-        <div className={styles.rightSection}>
-          {error && <div className={styles.errorMessage}>{error}</div>}
-          <form onSubmit={handleSubmit}>
-            <h2>Reservation Information</h2>
 
-            <div className={styles.formGroup}>
-              <label>Branch</label>
-              <select 
-                name="branch" 
-                value={formData.branch}
-                onChange={handleChange}
-                disabled={isSubmitting}
-              >
-                <option value="Coorg">Coorg</option>
-                <option value="Mumbai">Mumbai</option>
-                <option value="Ahmedabad">Ahmedabad</option>
-              </select>
-            </div>
-            
+      <div className={styles.bookingSection}>
+        <div className={styles.bookingImage}>
+          <img src={hotelIllustration} alt="Hotel Booking" />
+          <div className={styles.imageOverlay}>
+            <h2>Your Perfect Stay Awaits</h2>
+            <p>Begin your journey of comfort and luxury with Solace Stay.</p>
+          </div>
+        </div>
+
+        <div className={styles.bookingForm}>
+          <h2>Reservation Details</h2>
+          {error && <div className={styles.errorMessage}>{error}</div>}
+          
+          <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>
               <label>Room type</label>
               <select 
@@ -354,6 +403,20 @@ const HotelBooking = () => {
                 {formData.roomType === 'Deluxe Room' && 'Maximum 3 guests allowed'}
                 {formData.roomType === 'Standard Room' && 'Maximum 3 guests allowed'}
               </div>
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label>Branch</label>
+              <select 
+                name="branch" 
+                value={formData.branch}
+                onChange={handleChange}
+                disabled={isSubmitting}
+              >
+                <option value="coorg">Coorg</option>
+                <option value="mumbai">Mumbai</option>
+                <option value="ahmedabad">Ahmedabad</option>
+              </select>
             </div>
 
             <div className={styles.formRow}>
@@ -383,65 +446,85 @@ const HotelBooking = () => {
               </div>
             </div>
 
-            <div className={styles.guestsSection}>
-              <h3>Number of Guests</h3>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Adults</label>
-                  <select
-                    name="adults"
-                    value={formData.adults}
-                    onChange={handleChange}
-                    disabled={isSubmitting}
-                  >
-                    {renderOptions(getMaxGuests(formData.roomType), 1)}
-                  </select>
-                  <div className={styles.fieldHint}>12 years and above</div>
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Children</label>
-                  <select
-                    name="children"
-                    value={formData.children}
-                    onChange={handleChange}
-                    disabled={isSubmitting}
-                  >
-                    {renderOptions(getMaxGuests(formData.roomType) - parseInt(formData.adults))}
-                  </select>
-                  <div className={styles.fieldHint}>Under 11 years</div>
-                </div>
-              </div>
-              <div className={styles.guestSummary}>
-                Total Guests: <span>{parseInt(formData.adults) + parseInt(formData.children)}</span> out of <span>{getMaxGuests(formData.roomType)}</span> maximum
-              </div>
-            </div>
-
-            <h2>Personal Information</h2>
-            
-            <div className={styles.usernameVerification}>
+            <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label>Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Enter your username"
-                  value={formData.username}
+                <label>Number of Adults</label>
+                <select 
+                  name="adults"
+                  value={formData.adults}
                   onChange={handleChange}
-                  disabled={isSubmitting || userVerified}
+                  disabled={isSubmitting}
                   required
-                />
+                >
+                  {renderOptions(getMaxGuests(formData.roomType), 1)}
+                </select>
               </div>
-              <button 
-                type="button" 
-                className={styles.verifyButton}
-                onClick={verifyUser}
-                disabled={isSubmitting || userVerified || !formData.username}
-              >
-                {isSubmitting ? 'Verifying...' : 'Verify'}
-              </button>
+              <div className={styles.formGroup}>
+                <label>Number of Children</label>
+                <select 
+                  name="children"
+                  value={formData.children}
+                  onChange={handleChange}
+                  disabled={isSubmitting}
+                >
+                  {renderOptions(getMaxGuests(formData.roomType) - parseInt(formData.adults))}
+                </select>
+              </div>
             </div>
             
-            {userVerified && (
+            {availableRooms.length > 0 && (
+              <div className={styles.availabilityInfo}>
+                <h3>Available Rooms</h3>
+                <div className={styles.availableRoomsList}>
+                  {availableRooms.map(room => (
+                    <div 
+                      key={room.id} 
+                      className={`${styles.roomOption} ${selectedRoomId === room.id ? styles.selectedRoom : ''}`}
+                      onClick={() => setSelectedRoomId(room.id)}
+                    >
+                      <div className={styles.roomOptionHeader}>
+                        <span className={styles.roomNumber}>{room.roomNumber}</span>
+                        <span className={styles.roomPrice}>₹{room.pricePerNight}/night</span>
+                      </div>
+                      <div className={styles.roomOptionDetails}>
+                        <span>{room.roomType}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.formDivider}></div>
+
+            <div className={styles.userVerification}>
+              <h3>Guest Information</h3>
+              <div className={styles.usernameVerification}>
+                <div className={styles.formGroup}>
+                  <label>Username</label>
+                  <div className={styles.usernameInput}>
+                    <input
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      disabled={isSubmitting || userVerified}
+                      placeholder="Enter your registered username"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyUser}
+                      disabled={isSubmitting || userVerified || !formData.username}
+                      className={styles.verifyButton}
+                    >
+                      {isSubmitting ? 'Verifying...' : userVerified ? 'Verified ✓' : 'Verify'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            {userVerified ? (
               <>
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
@@ -504,12 +587,30 @@ const HotelBooking = () => {
                 <button 
                   type="submit" 
                   className={styles.submitButton}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || availableRooms.length === 0 || !selectedRoomId}
                 >
                   {isSubmitting ? 'Processing...' : 'Book Now'}
                 </button>
               </>
+            ) : (
+              <div className={styles.verificationMessage}>
+                {userNotFound ? (
+                  <div className={styles.notFoundMessage}>
+                    <p>User not found. Please verify your username or register first.</p>
+                    <button 
+                      type="button" 
+                      className={styles.registerButton}
+                      onClick={() => navigate('/register')}
+                    >
+                      Register Now
+                    </button>
+                  </div>
+                ) : (
+                  <p>Please verify your username to continue with booking</p>
+                )}
+              </div>
             )}
+          </div>
           </form>
         </div>
       </div>

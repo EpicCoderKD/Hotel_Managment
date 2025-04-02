@@ -443,3 +443,112 @@ input[type="date"] {
     padding: 0.7rem;
   }
 }
+
+/* Add styles for available rooms */
+.availabilityInfo {
+  margin: 20px 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #f9f9f9;
+}
+
+.availabilityInfo h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.availableRoomsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.roomOption {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.roomOption:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.selectedRoom {
+  border: 2px solid #800020;
+  box-shadow: 0 0 10px rgba(128, 0, 32, 0.2);
+  background-color: #fff9fa;
+}
+
+.roomOptionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.roomNumber {
+  font-size: 1rem;
+  color: #333;
+}
+
+.roomPrice {
+  font-size: 0.9rem;
+  color: #800020;
+}
+
+.roomOptionDetails {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.formDivider {
+  margin: 20px 0;
+  border-top: 1px solid #eee;
+}
+
+.usernameInput {
+  display: flex;
+  gap: 10px;
+}
+
+.usernameInput input {
+  flex: 1;
+}
+
+.verificationMessage {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.notFoundMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.registerButton {
+  background-color: #800020;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.registerButton:hover {
+  background-color: #600018;
+}

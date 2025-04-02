@@ -8,54 +8,120 @@ import Honeymoon from "../assets/images/honeymoon-suite.jpg";
 import Footer from './Footer';
 import Header from './Header';
 import { db } from '../firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 
 const Accommodation = () => {
   const navigate = useNavigate();
   const [selectedBranch, setSelectedBranch] = useState("coorg");
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
-  const [roomAvailability, setRoomAvailability] = useState({
-    "Standard Room": { total: 30, available: 30 },
-    "Deluxe Room": { total: 25, available: 25 },
-    "Master Suite": { total: 25, available: 25 },
-    "Honeymoon Suite": { total: 20, available: 20 }
-  });
+  const [branches, setBranches] = useState([]);
+  const [branchData, setBranchData] = useState(null);
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [roomAvailability, setRoomAvailability] = useState({});
   const [availabilityError, setAvailabilityError] = useState("");
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const branches = {
-    coorg: {
-      name: "Coorg",
-      totalRooms: 100,
-      rooms: {
-        "Standard Room": { total: 30, available: 30 },
-        "Deluxe Room": { total: 25, available: 25 },
-        "Master Suite": { total: 25, available: 25 },
-        "Honeymoon Suite": { total: 20, available: 20 }
+  // Fetch branches from Firebase
+  useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const branchesRef = collection(db, 'branches');
+        const branchesSnapshot = await getDocs(branchesRef);
+        const branchesData = branchesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setBranches(branchesData);
+      } catch (error) {
+        console.error('Error fetching branches:', error);
       }
-    },
-    mumbai: {
-      name: "Mumbai",
-      totalRooms: 80,
-      rooms: {
-        "Standard Room": { total: 25, available: 25 },
-        "Deluxe Room": { total: 20, available: 20 },
-        "Master Suite": { total: 20, available: 20 },
-        "Honeymoon Suite": { total: 15, available: 15 }
+    };
+
+    fetchBranches();
+  }, []);
+
+  // Fetch selected branch data
+  useEffect(() => {
+    const fetchBranchData = async () => {
+      try {
+        setIsLoading(true);
+        const branchRef = doc(db, 'branches', selectedBranch);
+        const branchSnapshot = await getDoc(branchRef);
+        
+        if (branchSnapshot.exists()) {
+          const data = branchSnapshot.data();
+          setBranchData(data);
+          
+          // Convert room types object to array
+          const roomTypesArray = Object.entries(data.roomTypes).map(([name, details]) => ({
+            id: name,
+            name,
+            ...details
+          }));
+          
+          setRoomTypes(roomTypesArray);
+        } else {
+          console.error('No branch found with ID:', selectedBranch);
+        }
+      } catch (error) {
+        console.error('Error fetching branch data:', error);
+      } finally {
+        setIsLoading(false);
       }
-    },
-    ahmedabad: {
-      name: "Ahmedabad",
-      totalRooms: 60,
-      rooms: {
-        "Standard Room": { total: 20, available: 20 },
-        "Deluxe Room": { total: 15, available: 15 },
-        "Master Suite": { total: 15, available: 15 },
-        "Honeymoon Suite": { total: 10, available: 10 }
-      }
+    };
+
+    if (selectedBranch) {
+      fetchBranchData();
     }
-  };
+  }, [selectedBranch]);
+
+  // Fetch room availability from Firebase rooms collection
+  useEffect(() => {
+    const fetchRoomAvailability = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Query rooms collection for this branch
+        const roomsRef = collection(db, 'rooms');
+        const roomsQuery = query(
+          roomsRef,
+          where('branch', '==', selectedBranch)
+        );
+        const roomsSnapshot = await getDocs(roomsQuery);
+        
+        // Count available rooms by type
+        const availability = {};
+        roomsSnapshot.forEach((doc) => {
+          const room = doc.data();
+          
+          if (!availability[room.roomType]) {
+            availability[room.roomType] = {
+              total: 0,
+              available: 0
+            };
+          }
+          
+          availability[room.roomType].total += 1;
+          
+          if (room.isAvailable && !room.isBooked) {
+            availability[room.roomType].available += 1;
+          }
+        });
+        
+        setRoomAvailability(availability);
+      } catch (error) {
+        console.error('Error fetching room availability:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (selectedBranch) {
+      fetchRoomAvailability();
+    }
+  }, [selectedBranch]);
 
   // Check room availability for selected dates
   const checkRoomAvailability = async (roomType) => {
@@ -76,35 +142,57 @@ const Accommodation = () => {
     setAvailabilityError("");
 
     try {
+      // Query rooms collection for available rooms of the specified type
+      const roomsRef = collection(db, 'rooms');
+      const roomsQuery = query(
+        roomsRef,
+        where('branch', '==', selectedBranch),
+        where('roomType', '==', roomType),
+        where('isAvailable', '==', true),
+        where('isBooked', '==', false)
+      );
+      
+      const roomsSnapshot = await getDocs(roomsQuery);
+      
+      // Check if we have any available rooms
+      const availableRooms = roomsSnapshot.docs.map(doc => doc.data());
+      
+      // Now check if any of these rooms have overlapping bookings
       const bookingsRef = collection(db, 'bookings');
-      const bookingsSnapshot = await getDocs(query(
+      const bookingsQuery = query(
         bookingsRef,
         where('branch', '==', selectedBranch),
         where('roomType', '==', roomType),
         where('status', 'in', ['confirmed', 'pending'])
-      ));
-
-      let isAvailable = true;
-      const checkIn = new Date(checkInDate);
-      const checkOut = new Date(checkOutDate);
-
-      bookingsSnapshot.forEach((doc) => {
-        const booking = doc.data();
-        const bookingCheckIn = new Date(booking.checkInDate);
-        const bookingCheckOut = new Date(booking.checkOutDate);
-
-        // Check for date overlap
-        if (
-          (checkIn >= bookingCheckIn && checkIn < bookingCheckOut) ||
-          (checkOut > bookingCheckIn && checkOut <= bookingCheckOut) ||
-          (checkIn <= bookingCheckIn && checkOut >= bookingCheckOut)
-        ) {
-          isAvailable = false;
-        }
+      );
+      
+      const bookingsSnapshot = await getDocs(bookingsQuery);
+      const bookings = bookingsSnapshot.docs.map(doc => doc.data());
+      
+      // Check date overlap for each available room
+      const roomsWithNoOverlap = availableRooms.filter(room => {
+        // Find bookings for this specific room
+        const roomBookings = bookings.filter(booking => 
+          booking.roomId === room.roomId || booking.roomNumber === room.roomNumber
+        );
+        
+        // Check if any booking overlaps with requested dates
+        const hasOverlap = roomBookings.some(booking => {
+          const bookingCheckIn = new Date(booking.checkInDate);
+          const bookingCheckOut = new Date(booking.checkOutDate);
+          
+          return (
+            (inDate >= bookingCheckIn && inDate < bookingCheckOut) ||
+            (outDate > bookingCheckIn && outDate <= bookingCheckOut) ||
+            (inDate <= bookingCheckIn && outDate >= bookingCheckOut)
+          );
+        });
+        
+        return !hasOverlap;
       });
-
+      
       setIsCheckingAvailability(false);
-      return isAvailable;
+      return roomsWithNoOverlap.length > 0;
     } catch (error) {
       console.error('Error checking availability:', error);
       setAvailabilityError("Error checking room availability");
@@ -122,7 +210,8 @@ const Accommodation = () => {
         state: {
           room,
           availability: roomAvailability[room.name],
-          branch: branches[selectedBranch],
+          branch: selectedBranch,
+          branchName: branchData?.name || selectedBranch,
           checkInDate,
           checkOutDate
         }
@@ -132,132 +221,24 @@ const Accommodation = () => {
     }
   };
 
-  // Fetch room availability from Firestore
-  useEffect(() => {
-    const fetchRoomAvailability = async () => {
-      try {
-        const bookingsRef = collection(db, 'bookings');
-        const bookingsSnapshot = await getDocs(query(
-          bookingsRef,
-          where('status', 'in', ['confirmed', 'pending']),
-          where('branch', '==', selectedBranch)
-        ));
-
-        // Count booked rooms by type
-        const bookedRooms = {
-          "Standard Room": 0,
-          "Deluxe Room": 0,
-          "Master Suite": 0,
-          "Honeymoon Suite": 0
-        };
-
-        // Count booked rooms from active bookings
-        bookingsSnapshot.forEach((doc) => {
-          const booking = doc.data();
-          if (booking.roomType) {
-            bookedRooms[booking.roomType] = (bookedRooms[booking.roomType] || 0) + 1;
-          }
-        });
-
-        // Update availability based on selected branch
-        const branchRooms = branches[selectedBranch].rooms;
-        const updatedAvailability = {
-          "Standard Room": {
-            total: branchRooms["Standard Room"].total,
-            available: Math.max(0, branchRooms["Standard Room"].total - bookedRooms["Standard Room"])
-          },
-          "Deluxe Room": {
-            total: branchRooms["Deluxe Room"].total,
-            available: Math.max(0, branchRooms["Deluxe Room"].total - bookedRooms["Deluxe Room"])
-          },
-          "Master Suite": {
-            total: branchRooms["Master Suite"].total,
-            available: Math.max(0, branchRooms["Master Suite"].total - bookedRooms["Master Suite"])
-          },
-          "Honeymoon Suite": {
-            total: branchRooms["Honeymoon Suite"].total,
-            available: Math.max(0, branchRooms["Honeymoon Suite"].total - bookedRooms["Honeymoon Suite"])
-          }
-        };
-
-        setRoomAvailability(updatedAvailability);
-      } catch (error) {
-        console.error('Error fetching room availability:', error);
-      }
-    };
-
-    fetchRoomAvailability();
-  }, [selectedBranch]);
-
   // Get today's date in YYYY-MM-DD format for min date attribute
   const today = new Date().toISOString().split('T')[0];
 
-  const rooms = [
-    {
-      id: 1,
-      name: "Standard Room",
-      image: Standard,
-      price: "₹3,999/night",
-      description:
-        "Comfortable and well-designed, our Standard Rooms provide excellent value. Featuring all essential amenities, these rooms are perfect for practical travelers who appreciate quality and comfort at a great price.",
-      amenities: [
-        "Double Bed",
-        "En-suite Bathroom",
-        '32" TV',
-        "Work Space",
-        "Air Conditioning",
-        "Daily Housekeeping",
-      ],
-    },
-    {
-      id: 2,
-      name: "Deluxe Room",
-      image: Deluxe,
-      price: "₹5,999/night",
-      description:
-        "Our Deluxe Rooms offer the perfect blend of comfort and style. Each room features a queen-size bed, modern furnishings, and a well-appointed bathroom. Ideal for business travelers or couples seeking quality accommodation.",
-      amenities: [
-        "Queen Size Bed",
-        "City View",
-        "Modern Bathroom",
-        '43" Smart TV',
-        "Work Desk",
-        "Tea/Coffee Maker",
-      ],
-    },
-    {
-      id: 3,
-      name: "Master Suite",
-      image: Master,
-      price: "₹9,999/night",
-      description:
-        "Experience ultimate luxury in our Master Suite. This suite offers a spacious king-size bed, an elegant living area, and a deluxe bathroom with a jacuzzi. Enjoy breathtaking city views from your private balcony, making your stay truly unforgettable.",
-      amenities: [
-        "King-Size Bed",
-        "Private Balcony",
-        "Luxury Bathroom with Jacuzzi",
-        '55" Smart TV',
-        "Spacious Living Area",
-        "Complimentary Breakfast",
-      ],
-    },
-    {
-      id: 4,
-      name: "Honeymoon Suite",
-      image: Honeymoon,
-      price: "₹12,999/night",
-      description:
-        "Indulge in romance and luxury in our exclusive Honeymoon Suite. Featuring a stunning king-size canopy bed, private balcony, and an elegant marble bathroom. The suite offers breathtaking panoramic views, creating the perfect ambiance for an unforgettable getaway.",
-      amenities: [
-        "King-Size Canopy Bed",
-        "Private Balcony with Panoramic Views",
-        "Elegant Marble Bathroom with Spa Tub",
-        "Mood Lighting",
-        "Premium Champagne Service",
-        "Intimate Dining Space",
-      ],
-    },
-  ];
+  // Get room image based on room type
+  const getRoomImage = (roomType) => {
+    switch (roomType) {
+      case 'Standard Room':
+        return Standard;
+      case 'Deluxe Room':
+        return Deluxe;
+      case 'Master Suite':
+        return Master;
+      case 'Honeymoon Suite':
+        return Honeymoon;
+      default:
+        return Standard;
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -272,19 +253,16 @@ const Accommodation = () => {
         <div className={styles.branchSelection}>
           <h2>Select Your Branch</h2>
           <div className={styles.branchCards}>
-            {Object.entries(branches).map(([key, branch]) => (
+            {branches.map((branch) => (
               <div
-                key={key}
-                className={`${styles.branchCard} ${selectedBranch === key ? styles.selectedBranch : ''}`}
-                onClick={() => setSelectedBranch(key)}
+                key={branch.id}
+                className={`${styles.branchCard} ${selectedBranch === branch.id ? styles.selectedBranch : ''}`}
+                onClick={() => setSelectedBranch(branch.id)}
               >
                 <h3>{branch.name}</h3>
-                <p>Total Rooms: {branch.totalRooms}</p>
-                <div className={styles.roomBreakdown}>
-                  <p>Standard: {branch.rooms["Standard Room"].total}</p>
-                  <p>Deluxe: {branch.rooms["Deluxe Room"].total}</p>
-                  <p>Master: {branch.rooms["Master Suite"].total}</p>
-                  <p>Honeymoon: {branch.rooms["Honeymoon Suite"].total}</p>
+                <div className={styles.branchDetails}>
+                  <p>{branch.location.city}, {branch.location.state}</p>
+                  <span className={styles.branchRating}>{branch.rating} ★</span>
                 </div>
               </div>
             ))}
@@ -327,38 +305,65 @@ const Accommodation = () => {
           )}
         </div>
 
-        <div className={styles.roomsGrid}>
-          {rooms.map((room) => (
-            <div key={room.id} className={styles.roomCard}>
-              <div className={styles.imageContainer}>
-                <img src={room.image} alt={room.name} />
-                <span className={styles.price}>{room.price}</span>
-                <div className={styles.availabilityBadge}>
-                  {roomAvailability[room.name]?.available} / {roomAvailability[room.name]?.total} Available
-                </div>
-              </div>
-              <div className={styles.roomInfo}>
-                <h2>{room.name}</h2>
-                <p className={styles.description}>{room.description}</p>
-                <div className={styles.amenities}>
-                  <h3>Room Amenities</h3>
-                  <ul>
-                    {room.amenities.map((amenity, index) => (
-                      <li key={index}>{amenity}</li>
-                    ))}
-                  </ul>
-                </div>
-                <button
-                  className={`${styles.bookButton} ${(roomAvailability[room.name]?.available === 0 || isCheckingAvailability) ? styles.disabledButton : ''}`}
-                  onClick={() => handleBookingClick(room)}
-                  disabled={roomAvailability[room.name]?.available === 0 || isCheckingAvailability}
-                >
-                  {isCheckingAvailability ? 'Checking Availability...' : 
-                   roomAvailability[room.name]?.available === 0 ? 'Fully Booked' : 'Book Now'}
-                </button>
-              </div>
+        {branchData && (
+          <div className={styles.branchInfo}>
+            <h2>{branchData.name} Branch</h2>
+            <div className={styles.branchAmenities}>
+              <h3>Branch Amenities</h3>
+              <ul className={styles.amenitiesList}>
+                {branchData.amenities.map((amenity, index) => (
+                  <li key={index}>{amenity}</li>
+                ))}
+              </ul>
             </div>
-          ))}
+            <div className={styles.contactInfo}>
+              <p><strong>Address:</strong> {branchData.location.address}, {branchData.location.city}, {branchData.location.state} {branchData.location.zipCode}</p>
+              <p><strong>Contact:</strong> {branchData.contactInfo.phone} | {branchData.contactInfo.email}</p>
+            </div>
+          </div>
+        )}
+
+        <div className={styles.roomsGrid}>
+          {isLoading ? (
+            <div className={styles.loading}>Loading rooms...</div>
+          ) : (
+            roomTypes.map((room) => (
+              <div key={room.id} className={styles.roomCard}>
+                <div className={styles.imageContainer}>
+                  <img src={getRoomImage(room.name)} alt={room.name} />
+                  <span className={styles.price}>₹{room.pricePerNight}/night</span>
+                  <div className={styles.availabilityBadge}>
+                    {roomAvailability[room.name]?.available} / {roomAvailability[room.name]?.total} Available
+                  </div>
+                </div>
+                <div className={styles.roomInfo}>
+                  <h2>{room.name}</h2>
+                  <div className={styles.roomStats}>
+                    <span>Max Guests: {room.maxGuests}</span>
+                    <span>Size: {room.roomSize}</span>
+                    <span>Bed: {room.bedType}</span>
+                  </div>
+                  <p className={styles.description}>{room.description}</p>
+                  <div className={styles.amenities}>
+                    <h3>Room Amenities</h3>
+                    <ul>
+                      {room.amenities?.map((amenity, index) => (
+                        <li key={index}>{amenity}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <button
+                    className={`${styles.bookButton} ${(roomAvailability[room.name]?.available === 0 || isCheckingAvailability) ? styles.disabledButton : ''}`}
+                    onClick={() => handleBookingClick(room)}
+                    disabled={roomAvailability[room.name]?.available === 0 || isCheckingAvailability}
+                  >
+                    {isCheckingAvailability ? 'Checking Availability...' : 
+                     roomAvailability[room.name]?.available === 0 ? 'Fully Booked' : 'Book Now'}
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
       <Footer />
