@@ -1,0 +1,1180 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+}
+
+.pageHeader {
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: white;
+  border-bottom: 2px solid #970b0b;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.pageHeader h1 {
+  font-size: 2.8rem;
+  color: #970b0b;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.pageHeader p {
+  font-size: 1.3rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.paymentCard {
+  display: flex;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 1300px;
+  margin: 0 auto 60px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.leftSection {
+  flex: 0.4;
+  padding: 3rem;
+  background: linear-gradient(145deg, #970b0b, #800000);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.leftSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../assets/images/Booking_p.png') center/cover;
+  opacity: 0.1;
+}
+
+.leftSection h1 {
+  color: white;
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.leftSection p {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+  font-size: 1.1rem;
+}
+
+.bookingSummary {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  margin-top: 2rem;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bookingSummary h3 {
+  color: white;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+}
+
+.summaryItem.total {
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: white;
+}
+
+.rightSection {
+  flex: 0.6;
+  padding: 3.5rem 4rem;
+  background: white;
+  position: relative;
+  z-index: 10;
+}
+
+.rightSection h2 {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid rgba(151, 11, 11, 0.1);
+  position: relative;
+}
+
+.rightSection h2::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: #970b0b;
+  border-radius: 2px;
+}
+
+/* Payment Method Tabs */
+.paymentMethodTabs {
+  display: flex;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  background: #f5f5f5;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.methodTab {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #555;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.methodTab svg {
+  font-size: 1.1rem;
+}
+
+.methodTab:hover {
+  background: rgba(151, 11, 11, 0.05);
+  color: #970b0b;
+}
+
+.activeTab {
+  background: white;
+  color: #970b0b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formRow {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup {
+  flex: 1;
+  margin-bottom: 1.8rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  color: #333;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: #970b0b;
+  box-shadow: 0 0 0 4px rgba(151, 11, 11, 0.1);
+  outline: none;
+}
+
+.formGroup input:hover,
+.formGroup select:hover {
+  border-color: #d0d0d0;
+}
+
+.cardDetails, .upiDetails, .netBankingDetails, .cashPaymentDetails {
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  margin-bottom: 2rem;
+  background-color: white;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+.cardDetails h3, .upiDetails h3, .netBankingDetails h3, .cashPaymentDetails h3 {
+  color: #333;
+  margin-bottom: 1.8rem;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+}
+
+.cardDetails h3 svg, .upiDetails h3 svg, .netBankingDetails h3 svg, .cashPaymentDetails h3 svg {
+  color: #970b0b;
+}
+
+.cardIcons {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.cardIcon {
+  width: 80px;
+  height: 50px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background-color: white;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.cardIcon img {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+}
+
+.cardIcon.active {
+  border-color: #970b0b;
+  opacity: 1;
+  box-shadow: 0 0 0 2px rgba(151, 11, 11, 0.2);
+  transform: scale(1.05);
+}
+
+.cardNumber {
+  position: relative;
+  background: white;
+}
+
+.cardNumber input {
+  padding-right: 45px;
+  letter-spacing: 1.5px;
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+.cardNumberIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  z-index: 5;
+}
+
+.expiryDate {
+  display: flex;
+  gap: 10px;
+}
+
+.expiryDate select {
+  flex: 1;
+  font-family: monospace;
+}
+
+.payButton {
+  background: linear-gradient(145deg, #970b0b, #800000);
+  color: white;
+  padding: 1.2rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 1.5rem;
+  box-shadow: 0 8px 16px rgba(151, 11, 11, 0.2);
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.payButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.payButton:hover {
+  background: linear-gradient(145deg, #800000, #700000);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 20px rgba(151, 11, 11, 0.3);
+}
+
+.payButton:hover::before {
+  left: 100%;
+}
+
+.payButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.securePayment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1.5rem;
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.securePayment svg {
+  color: #28a745;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  display: block;
+  font-weight: 500;
+}
+
+.errorMessage {
+  background-color: #fff5f5;
+  color: #dc3545;
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border: 1px solid #ffcdd2;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Checkbox styling */
+.formGroup label input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+  cursor: pointer;
+  transform: scale(1.2);
+}
+
+.formGroup label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* UPI Payment Section */
+.upiContent {
+  display: flex;
+  gap: 2rem;
+}
+
+.upiQrSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qrPlaceholder {
+  width: 180px;
+  height: 180px;
+  border: 2px dashed #e0e0e0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  margin-bottom: 1.5rem;
+  background: #f9f9f9;
+}
+
+.qrPlaceholder p {
+  margin-top: 1rem;
+  color: #777;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.upiApps {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.upiApps img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+  padding: 5px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.upiApps img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.upiIdSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.orText {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #777;
+  position: relative;
+}
+
+.orText::before,
+.orText::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.orText::before {
+  left: 0;
+}
+
+.orText::after {
+  right: 0;
+}
+
+.upiIdInput {
+  position: relative;
+}
+
+.upiIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.upiNoteText {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+/* Net Banking Section */
+.popularBanks {
+  margin-bottom: 2rem;
+}
+
+.popularBanks p {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bankIcons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.bankIcon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bankLogo {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  border: 2px solid #e0e0e0;
+  font-weight: bold;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.bankIcon p {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.bankIcon:hover .bankLogo {
+  background: #f0f0f0;
+  transform: translateY(-3px);
+}
+
+.bankIcon.active .bankLogo {
+  border-color: #970b0b;
+  color: #970b0b;
+  background: rgba(151, 11, 11, 0.05);
+  box-shadow: 0 4px 12px rgba(151, 11, 11, 0.1);
+}
+
+.bankIcon.active p {
+  color: #970b0b;
+  font-weight: 600;
+}
+
+.netBankingNote {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 10px;
+  border-left: 4px solid #970b0b;
+}
+
+/* Cash Payment Section */
+.cashPaymentContent {
+  padding: 1rem 0;
+}
+
+.cashInfoBox {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e0e0e0;
+}
+
+.cashInfoBox h4 {
+  color: #333;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.cashInfoBox p {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.paymentMethods {
+  margin-bottom: 1.5rem;
+}
+
+.paymentMethods p {
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #555;
+}
+
+.acceptedMethods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.acceptedMethods span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: white;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: #333;
+  border: 1px solid #e0e0e0;
+}
+
+.importantNote {
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 193, 7, 0.1);
+  padding: 1rem;
+  border-radius: 10px;
+  border-left: 4px solid #ffc107;
+}
+
+.importantNote svg {
+  color: #ffc107;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.importantNote p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Card Type Detection */
+.cardTypeIndicator {
+  margin-bottom: 2rem;
+}
+
+.detectedCard {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.detectedCard span {
+  font-weight: 600;
+  color: #333;
+}
+
+.cardLogo {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.cardLogo img {
+  max-height: 100%;
+  max-width: 80px;
+  object-fit: contain;
+}
+
+/* UPI App Links */
+.upiAppLinks {
+  margin-top: 1.5rem;
+}
+
+.upiAppLinks p {
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #333;
+}
+
+.upiAppLinks ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.upiAppLinks li {
+  flex: 1;
+  min-width: 100px;
+}
+
+.upiAppLinks a {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  color: #970b0b;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.upiAppLinks a:hover {
+  background-color: #970b0b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(151, 11, 11, 0.2);
+}
+
+/* Card Category Selector */
+.cardCategorySelector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cardCategoryOption {
+  flex: 1;
+  padding: 12px 20px;
+  background-color: #f5f5f5;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #555;
+  border: 1px solid #e0e0e0;
+}
+
+.cardCategoryOption:hover {
+  background-color: #e9e9e9;
+}
+
+.cardCategoryOption.active {
+  background-color: #970b0b;
+  color: white;
+  box-shadow: 0 4px 8px rgba(151, 11, 11, 0.2);
+}
+
+/* UPI QR Code */
+.qrPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.upiQrCode {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  border: 1px solid #e0e0e0;
+  padding: 8px;
+  background: white;
+}
+
+/* Bank Options */
+.bankOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 2rem;
+}
+
+.bankOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100px;
+}
+
+.bankOption img {
+  width: 60px;
+  height: 40px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.bankOption span {
+  font-weight: 600;
+  color: #333;
+}
+
+.bankOption:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.bankOption.active {
+  border-color: #970b0b;
+  background-color: rgba(151, 11, 11, 0.05);
+  box-shadow: 0 5px 15px rgba(151, 11, 11, 0.1);
+}
+
+.popularBanks h4,
+.otherBanks h4 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.bankSelect {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Success Message and Receipt */
+.successMessage {
+  background-color: white;
+  border-radius: 15px;
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  max-width: 500px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: 90%;
+}
+
+.successIcon {
+  font-size: 3rem;
+  color: #4CAF50;
+  background-color: rgba(76, 175, 80, 0.1);
+  padding: 1rem;
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+}
+
+.successMessage h2 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.successMessage p {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.paymentId {
+  font-weight: 700;
+  color: #970b0b;
+  background-color: rgba(151, 11, 11, 0.05);
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-bottom: 2rem;
+  border: 1px dashed #970b0b;
+}
+
+.receiptButton {
+  margin-bottom: 1.5rem;
+}
+
+.downloadBtn {
+  background-color: #970b0b;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(151, 11, 11, 0.3);
+}
+
+.downloadBtn:hover {
+  background-color: #800000;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(151, 11, 11, 0.4);
+}
+
+.downloadBtn svg {
+  font-size: 1.2rem;
+}
+
+.homeButton {
+  background-color: transparent;
+  color: #970b0b;
+  border: 1px solid #970b0b;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.homeButton:hover {
+  background-color: rgba(151, 11, 11, 0.05);
+}
+
+.downloadNote {
+  color: #666;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.okButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.okButton:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* Room Selection Styles */
+.roomSelection {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.roomSelection h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #800000;
+  font-size: 1.1rem;
+}
+
+.roomSelect {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+/* Email Button Styles */
+.emailBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.emailBtn:hover {
+  background-color: #45a049;
+}
+
+.emailBtn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinnerIcon {
+  animation: spin 1s linear infinite;
+}
+
+@media (max-width: 1200px) {
+  .paymentCard {
+    width: 95%;
+  }
+  
+  .rightSection {
+    padding: 2.5rem 3rem;
+  }
+  
+  .upiContent {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .upiQrSection {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .paymentCard {
+    flex-direction: column;
+    width: 95%;
+    max-width: 700px;
+  }
+  
+  .leftSection, .rightSection {
+    width: 100%;
+  }
+  
+  .rightSection {
+    padding: 2.5rem;
+  }
+  
+  .formRow {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .cardIcon {
+    width: 70px;
+    height: 45px;
+  }
+  
+  .methodTab {
+    padding: 0.7rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  
+  .upiContent {
+    flex-direction: column;
+  }
+  
+  .qrPlaceholder {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .pageHeader h1 {
+    font-size: 2.2rem;
+  }
+  
+  .pageHeader p {
+    font-size: 1.1rem;
+  }
+  
+  .rightSection {
+    padding: 2rem 1.5rem;
+  }
+  
+  .cardIcons {
+    gap: 10px;
+  }
+  
+  .cardIcon {
+    width: 60px;
+    height: 40px;
+  }
+  
+  .methodTab {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.7rem;
+  }
+  
+  .methodTab svg {
+    margin-right: 0;
+  }
+  
+  .bankIcons {
+    gap: 10px;
+  }
+  
+  .bankLogo {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.5s ease;
+}

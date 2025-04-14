@@ -1,0 +1,456 @@
+/* General Styles */
+.container {
+  font-family: "Times New Roman", serif;
+  background-color: white;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode Styles */
+.darkMode {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.darkMode .heroContent {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.darkMode .hero h1,
+.darkMode .hero p {
+  color: #ffffff;
+}
+
+.darkMode .accommodationsSection {
+  background-color: #2d2d2d;
+}
+
+.darkMode .accommodationsIntro {
+  color: #cccccc;
+}
+
+.darkMode .roomCard {
+  background-color: #2d2d2d;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.darkMode .roomTitle {
+  color: #ffffff;
+}
+
+.darkMode .servicesContainer {
+  background-color: #2d2d2d;
+}
+
+.darkMode .servicesTitle {
+  color: #ffffff;
+}
+
+.darkMode .serviceIcon {
+  color: #ffffff;
+}
+
+.darkMode .serviceTitle {
+  color: #cccccc;
+}
+
+.darkMode .storySection {
+  background-color: #2d2d2d;
+}
+
+.darkMode .storyText {
+  color: #ffffff;
+}
+
+.darkMode .storyText h3 {
+  color: #ff6b6b;
+}
+
+.darkMode .storyText p {
+  color: #cccccc;
+}
+
+.darkMode .aboutSection {
+  background-color: #2d2d2d;
+}
+
+.darkMode .aboutContent {
+  color: #ffffff;
+}
+
+.darkMode .aboutContent p {
+  color: #cccccc;
+}
+
+.darkMode .contactDetails h3 {
+  color: #ff6b6b;
+}
+
+.darkMode .contactDetails p {
+  color: #cccccc;
+}
+
+/* Hero Section */
+.hero {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /* Full viewport height */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align text to the upper part */
+  text-align: center;
+  color: white;
+  position: relative;
+  padding-top: 3vh; /* Push text down slightly */
+}
+
+.heroContent {
+  background: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 80%;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: #800000;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  font-style: italic;
+  margin-bottom: 10px;
+  color: #800000;
+}
+
+.rating {
+  font-size: 24px;
+  color: gold;
+}
+
+/* Services Section */
+.servicesContainer {
+  text-align: center;
+  padding: 40px 10px; /* Increased padding for a better gap */
+  margin-top: 30px; /* Adds space between the sections */
+}
+
+.servicesTitle {
+  font-size: 24px;
+  margin-bottom: 10px; /* Less space between title and grid */
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Services Grid - Square Layout */
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  grid-template-rows: repeat(3, auto); /* 3 rows for a square shape */
+  gap: 50px; /* Reduced gap for a tighter layout */
+  justify-content: center;
+  align-items: center;
+  max-width: 400px; /* Keeps it compact */
+  margin: 0 auto; /* Center the grid */
+}
+
+@media (max-width: 900px) {
+  .servicesGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 per row on medium screens */
+    grid-template-rows: repeat(4, auto); /* Adjust rows */
+  }
+}
+
+@media (max-width: 600px) {
+  .servicesGrid {
+    grid-template-columns: repeat(1, 1fr); /* 1 per row on mobile */
+    grid-template-rows: repeat(6, auto);
+  }
+}
+
+.serviceItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.serviceItem:hover {
+  transform: translateY(-7px);
+}
+
+.serviceIcon {
+  font-size: 40px; /* Slightly smaller for balance */
+  color: #000000; /* Dark red */
+}
+
+.servicesTitle {
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+}
+
+.servicesTitle::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #800000;
+  margin: 5px auto 0; /* Adjust space between text and underline */
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+/* .sectionTitle::after {
+  content: "";
+  display: block;
+  width: 2000%;
+  height: 2px;
+  background-color: #800000;
+  margin: 5px auto 0;
+} */
+
+.storySection {
+  text-align: center;
+  padding: 60px 10%;
+  background-color:white;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000000;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: #800000;
+  margin: 10px auto;
+}
+
+.storyContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.storyImage {
+  width: 40%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.storyText {
+  width: 50%;
+  text-align: left;
+  font-family: "Times New Roman", serif;
+  color: #000000;
+}
+
+.storyText h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #990b0b;
+  margin-top: 15px;
+}
+
+.storyText p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.aboutSection {
+  padding: 60px 20px;
+  background-color: white;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.aboutContent {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #555;
+}
+
+.aboutContent p {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.contactDetails {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.contactDetails h3 {
+  font-size: 22px;
+  color: #444;
+  margin-top: 15px;
+}
+
+.contactDetails p {
+  font-size: 18px;
+  color: #666;
+}
+
+/* Accommodations Section */
+.accommodationsSection {
+  text-align: center;
+  padding: 60px 10%;
+  background-color: #f9f9f9;
+}
+
+.accommodationsIntro {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  color: #333;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.roomsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .roomsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roomCard {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  background-color: white;
+}
+
+.roomCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.roomImageContainer {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.roomImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.roomCard:hover .roomImage {
+  transform: scale(1.05);
+}
+
+.roomOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+}
+
+.roomCard:hover .roomOverlay {
+  opacity: 1;
+}
+
+.roomOverlay h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.roomPrice {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f8d49d;
+  margin-bottom: 15px;
+}
+
+.roomDescription {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.roomTitle {
+  padding: 15px;
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.viewAllRooms {
+  margin-top: 20px;
+}
+
+.viewAllButton {
+  background-color: #800000;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.viewAllButton:hover {
+  background-color: #a00000;
+  transform: scale(1.05);
+}

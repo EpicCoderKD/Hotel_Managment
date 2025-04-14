@@ -1,0 +1,361 @@
+/* General Styles */
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contentContainer {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  width: 100%;
+  flex: 1;
+}
+
+.pageHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+  margin-top: 1rem;
+}
+
+.pageHeader h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.pageHeader p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Display exactly 2 room cards per row on wider screens */
+.roomsGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* Default: Single column */
+  gap: 2rem;
+}
+
+.roomCard {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.roomCard:hover {
+  transform: translateY(-5px);
+}
+
+.imageContainer {
+  position: relative;
+  height: 300px;
+}
+
+.imageContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.price {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(139, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.roomInfo {
+  padding: 1.5rem;
+}
+
+.roomInfo h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.description {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.amenities {
+  margin-bottom: 1.5rem;
+}
+
+.amenities h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.amenities ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.amenities li {
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.amenities li:before {
+  content: '✓';
+  color: #8B0000;
+}
+
+/* Add styles for availability badge */
+.availabilityBadge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: rgba(218, 14, 14, 0.9);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.fullyBooked {
+  background-color: rgba(139, 0, 0, 0.9) !important;
+  color: #ffffff !important;
+}
+
+/* Buttons */
+.bookButton {
+  background-color: #800000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.bookButton:hover:not(.disabledButton) {
+  background-color: #660000;
+}
+
+.disabledButton {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.disabledButton:hover {
+  background-color: #cccccc;
+}
+
+/* Responsive design for 2 rooms per row */
+@media (min-width: 768px) {
+  .roomsGrid {
+    grid-template-columns: repeat(2, 1fr); /* Exactly 2 cards per row */
+  }
+}
+
+/* On very large screens, maintain 2 per row */
+@media (min-width: 1200px) {
+  .roomsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Hover effect for all buttons */
+button {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #555; /* Darker shade on hover */
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Navigation Bar */
+.nav {
+  background: white;
+  border-top: 2px solid #800000;
+  border-bottom: 2px solid #800000;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  width: 100%;
+}
+
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 125px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav ul li {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+  text-transform: uppercase;
+  transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out;
+}
+
+.nav ul li:hover {
+  color: #800000;
+  text-decoration: underline; /* Underline on hover */
+}
+
+.branchSelection {
+  margin: 2rem auto;
+  padding: 0 2rem;
+  max-width: 1200px;
+}
+
+.branchSelection h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.branchCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.branchCard {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.branchCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.selectedBranch {
+  border-color: #970b0b;
+  background: linear-gradient(145deg, #ffffff, #fff5f5);
+}
+
+.branchCard h3 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.branchCard p {
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.roomBreakdown {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.roomBreakdown p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.roomBreakdown p:last-child {
+  margin-bottom: 0;
+}
+
+.dateSelection {
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dateSelection h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.datePickerContainer {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.datePickerWrapper {
+  flex: 1;
+  min-width: 200px;
+}
+
+.datePickerWrapper label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.datePicker {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.datePicker:focus {
+  border-color: #970b0b;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(151, 11, 11, 0.1);
+}
+
+.errorMessage {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff5f5;
+  color: #dc3545;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid #ffcdd2;
+}
