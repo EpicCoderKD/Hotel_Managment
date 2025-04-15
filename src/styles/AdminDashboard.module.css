@@ -1,0 +1,112 @@
+.section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin: 2rem;
+}
+
+.sectionTitle {
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #970b0b;
+}
+
+.reportTable {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.reportTable table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.reportTable th {
+  background: #970b0b;
+  color: white;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 500;
+}
+
+.reportTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.reportTable tr:last-child td {
+  border-bottom: none;
+}
+
+.reportTable tr:hover td {
+  background-color: #f8f8f8;
+}
+
+.ratingCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  color: #ffc107;
+  font-size: 1.2rem;
+}
+
+.ratingNumber {
+  color: #666;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.feedbackText {
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+.loadingCell,
+.emptyCell {
+  text-align: center;
+  padding: 2rem !important;
+  color: #666;
+}
+
+.loadingCell {
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .section {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .reportTable th,
+  .reportTable td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .star {
+    font-size: 1rem;
+  }
+
+  .feedbackText {
+    max-width: 300px;
+  }
+} 

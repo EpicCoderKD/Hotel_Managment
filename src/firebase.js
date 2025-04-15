@@ -26,4 +26,22 @@ const auth = getAuth(app);
 // Initialize Firebase Functions
 const functions = getFunctions(app);
 
+// Enable offline persistence
+if (typeof window !== 'undefined') {
+  try {
+    db.enablePersistence()
+      .catch((err) => {
+        if (err.code === 'failed-precondition') {
+          // Multiple tabs open, persistence can only be enabled in one tab at a time
+          console.log('Persistence failed: Multiple tabs open');
+        } else if (err.code === 'unimplemented') {
+          // The current browser doesn't support persistence
+          console.log('Persistence not supported by browser');
+        }
+      });
+  } catch (error) {
+    console.error('Error enabling persistence:', error);
+  }
+}
+
 export { db, auth, functions };

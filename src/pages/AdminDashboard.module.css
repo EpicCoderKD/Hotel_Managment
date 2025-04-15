@@ -1,0 +1,778 @@
+.dashboard {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 2rem;
+}
+
+.darkMode {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #800000;
+}
+
+.darkMode .header {
+  border-bottom-color: #ff6b6b;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.initializeButton {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.initializeButton:hover {
+  background-color: #45a049;
+}
+
+.initializeButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.darkMode .initializeButton {
+  background-color: #66bb6a;
+}
+
+.darkMode .initializeButton:hover {
+  background-color: #5cb860;
+}
+
+.darkMode .initializeButton:disabled {
+  background-color: #666666;
+}
+
+.themeButton {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.themeButton:hover {
+  transform: rotate(360deg);
+}
+
+.logoutButton {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+  background-color: #c82333;
+}
+
+.content {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.darkMode .content {
+  background: #2d2d2d;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+
+.darkMode .tabs {
+  border-bottom-color: #444;
+}
+
+.tabButton {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+.darkMode .tabButton {
+  color: #aaa;
+}
+
+.tabButton:hover {
+  background-color: #f0f0f0;
+  color: #800000;
+}
+
+.darkMode .tabButton:hover {
+  background-color: #3d3d3d;
+  color: #ff6b6b;
+}
+
+.tabButton.active {
+  background-color: #800000;
+  color: white;
+}
+
+.darkMode .tabButton.active {
+  background-color: #ff6b6b;
+}
+
+.dashboardStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.darkMode .statCard {
+  background: #3d3d3d;
+}
+
+.statCard h3 {
+  margin: 0 0 1rem;
+  color: #800000;
+  font-size: 1.1rem;
+}
+
+.darkMode .statCard h3 {
+  color: #ff6b6b;
+}
+
+.statCard p {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.darkMode .statCard p {
+  color: #fff;
+}
+
+.bookingsList {
+  margin-top: 2rem;
+}
+
+.bookingsList h2 {
+  margin-bottom: 2rem;
+  color: #800000;
+}
+
+.darkMode .bookingsList h2 {
+  color: #ff6b6b;
+}
+
+.bookingsTable {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.darkMode .bookingsTable {
+  background: #2d2d2d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.bookingHeader {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: #800000;
+  color: white;
+  font-weight: 600;
+}
+
+.darkMode .bookingHeader {
+  background: #ff6b6b;
+}
+
+.bookingRow {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.3s ease;
+}
+
+.bookingRow:last-child {
+  border-bottom: none;
+}
+
+.bookingRow:hover {
+  background-color: #f8f9fa;
+}
+
+.darkMode .bookingRow {
+  border-bottom-color: #444;
+}
+
+.darkMode .bookingRow:hover {
+  background-color: #3d3d3d;
+}
+
+.bookingCell {
+  font-size: 0.95rem;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.darkMode .bookingCell {
+  color: #ddd;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  text-align: center;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.confirmed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.darkMode .confirmed {
+  background-color: #155724;
+  color: #d4edda;
+}
+
+.darkMode .pending {
+  background-color: #856404;
+  color: #fff3cd;
+}
+
+.darkMode .cancelled {
+  background-color: #721c24;
+  color: #f8d7da;
+}
+
+.roomsManagement {
+  padding: 2rem;
+}
+
+.roomsManagement h2 {
+  margin-bottom: 2rem;
+  color: #800000;
+}
+
+.darkMode .roomsManagement h2 {
+  color: #ff6b6b;
+}
+
+.branchSelector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.branchButton {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #800000;
+  border-radius: 25px;
+  background: none;
+  color: #800000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.darkMode .branchButton {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.branchButton:hover {
+  background: #800000;
+  color: white;
+}
+
+.darkMode .branchButton:hover {
+  background: #ff6b6b;
+  color: #1a1a1a;
+}
+
+.branchButton.active {
+  background: #800000;
+  color: white;
+}
+
+.darkMode .branchButton.active {
+  background: #ff6b6b;
+  color: #1a1a1a;
+}
+
+.roomsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.roomCard {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.darkMode .roomCard {
+  background: #3d3d3d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.roomCard:hover {
+  transform: translateY(-5px);
+}
+
+.roomHeader {
+  background: #800000;
+  color: white;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.darkMode .roomHeader {
+  background: #ff6b6b;
+}
+
+.roomHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.branchTag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
+}
+
+.roomInfo {
+  padding: 1.5rem;
+}
+
+.roomStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.roomStat:last-child {
+  margin-bottom: 0;
+}
+
+.roomStat span {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.darkMode .roomStat span {
+  color: #ddd;
+}
+
+.roomStat strong {
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.darkMode .roomStat strong {
+  color: #fff;
+}
+
+.roomsSummary {
+  margin-top: 2rem;
+}
+
+.summaryCard {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.darkMode .summaryCard {
+  background: #3d3d3d;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.summaryCard h4 {
+  margin: 0 0 1rem;
+  color: #800000;
+  font-size: 1.1rem;
+}
+
+.darkMode .summaryCard h4 {
+  color: #ff6b6b;
+}
+
+.summaryCard p {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.darkMode .summaryCard p {
+  color: #fff;
+}
+
+.staffList {
+  margin-top: 1rem;
+}
+
+.staffList h2 {
+  margin-bottom: 2rem;
+  color: #800000;
+}
+
+.darkMode .staffList h2 {
+  color: #ff6b6b;
+}
+
+.staffGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.staffCard {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.staffCard:hover {
+  transform: translateY(-5px);
+}
+
+.darkMode .staffCard {
+  background: #3d3d3d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.staffHeader {
+  background: #800000;
+  color: white;
+  padding: 1.5rem;
+}
+
+.darkMode .staffHeader {
+  background: #ff6b6b;
+}
+
+.staffHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.designation {
+  display: block;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+.staffInfo {
+  padding: 1.5rem;
+}
+
+.staffInfo p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.darkMode .staffInfo p {
+  color: #ddd;
+}
+
+.staffInfo strong {
+  color: #333;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.darkMode .staffInfo strong {
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .headerButtons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .bookingHeader {
+    display: none;
+  }
+
+  .bookingRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .bookingCell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: normal;
+  }
+
+  .bookingCell::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #800000;
+  }
+
+  .darkMode .bookingCell::before {
+    color: #ff6b6b;
+  }
+
+  .status {
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .staffGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .roomsManagement {
+    padding: 1rem;
+  }
+
+  .branchSelector {
+    justify-content: center;
+  }
+
+  .roomsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .summaryCard {
+    max-width: 100%;
+  }
+}
+
+.dashboardContainer {
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  color: #800000;
+  margin-bottom: 1rem;
+}
+
+.section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.section h2 {
+  color: #800000;
+  margin-bottom: 1.5rem;
+}
+
+.branchButtons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.branchButton {
+  padding: 0.75rem 1.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.branchButton:hover {
+  background: #e9ecef;
+}
+
+.branchButton.active {
+  background: #800000;
+  color: white;
+  border-color: #800000;
+}
+
+.roomGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.roomCard {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.roomCard h3 {
+  color: #800000;
+  margin-bottom: 1rem;
+}
+
+.roomInfo {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.roomInfo span {
+  font-weight: 500;
+}
+
+.totalRooms {
+  background: #800000;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.totalRooms h3 {
+  margin-bottom: 1rem;
+}
+
+.totalRooms p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.actionButton {
+  padding: 0.75rem 1.5rem;
+  background: #800000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.actionButton:hover {
+  background: #600000;
+}
+
+.actionButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 1rem;
+  }
+
+  .section {
+    padding: 1.5rem;
+  }
+
+  .roomGrid {
+    grid-template-columns: 1fr;
+  }
+} 

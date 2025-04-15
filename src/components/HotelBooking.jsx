@@ -40,6 +40,7 @@ const HotelBooking = () => {
     lastName: '',
     phone: '',
     email: '',
+    comments: ''
   });
 
   // Get max guests based on room type
@@ -261,6 +262,7 @@ const HotelBooking = () => {
         status: 'pending',
         createdAt: new Date(),
         bookingDate: new Date(),
+        comments: formData.comments
       };
 
       // Add to Firestore with custom document ID
@@ -499,6 +501,19 @@ const HotelBooking = () => {
                       required
                     />
                   </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Comments or Special Requests</label>
+                  <textarea
+                    name="comments"
+                    value={formData.comments}
+                    onChange={handleChange}
+                    placeholder="Please share any special requests or comments about your stay..."
+                    className={styles.commentInput}
+                    rows="4"
+                    disabled={isSubmitting}
+                  />
                 </div>
 
                 <button 

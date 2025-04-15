@@ -1,0 +1,103 @@
+.paymentContainer {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.paymentContainer h2 {
+  color: #800000;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.paymentInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bookingDetails,
+.paymentMethod {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.bookingDetails h3,
+.paymentMethod h3 {
+  color: #800000;
+  margin-bottom: 1.5rem;
+}
+
+.bookingDetails p {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.bookingDetails strong {
+  color: #800000;
+  margin-right: 0.5rem;
+}
+
+.paymentOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.paymentOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.paymentOption:hover {
+  border-color: #800000;
+  background: #fff;
+}
+
+.paymentOption input[type="radio"] {
+  accent-color: #800000;
+}
+
+.payButton {
+  width: 100%;
+  padding: 1rem;
+  background: #800000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.payButton:hover {
+  background: #600000;
+}
+
+.payButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .paymentContainer {
+    padding: 1rem;
+  }
+
+  .paymentInfo {
+    grid-template-columns: 1fr;
+  }
+} 

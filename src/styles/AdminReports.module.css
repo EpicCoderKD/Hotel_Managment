@@ -1,0 +1,173 @@
+.error {
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem;
+  background-color: #fff3f3;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  color: #d32f2f;
+}
+
+.errorHelp {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.errorHelp a {
+  color: #970b0b;
+  text-decoration: underline;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.reportTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reportTable th {
+  background-color: #970b0b;
+  color: white;
+  text-align: left;
+  padding: 1rem;
+  font-weight: 500;
+}
+
+.reportTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.reportTable tr:last-child td {
+  border-bottom: none;
+}
+
+.reportTable tr:hover td {
+  background-color: #f8f8f8;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  color: #ffc107;
+  font-size: 1.2rem;
+}
+
+.ratingCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ratingNumber {
+  color: #666;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.feedbackText {
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 2rem !important;
+  color: #666;
+  font-style: italic;
+}
+
+.statsCards {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.revenueCard,
+.ratingCard {
+  background: #970b0b;
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+}
+
+.revenueCard h3,
+.ratingCard h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: normal;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.revenueCard p,
+.ratingCard p {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 600;
+}
+
+.ratingCard p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ratingCard .stars {
+  font-size: 2rem;
+}
+
+@media (max-width: 768px) {
+  .reportTable th,
+  .reportTable td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .star {
+    font-size: 1rem;
+  }
+
+  .feedbackText {
+    max-width: 300px;
+  }
+
+  .statsCards {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .revenueCard,
+  .ratingCard {
+    width: 100%;
+    max-width: 320px;
+    padding: 1.5rem;
+  }
+
+  .revenueCard p,
+  .ratingCard p {
+    font-size: 2.5rem;
+  }
+
+  .ratingCard .stars {
+    font-size: 1.8rem;
+  }
+} 

@@ -1,0 +1,112 @@
+.bookingContainer {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.bookingContainer h2 {
+  color: #800000;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.bookingForm {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #800000;
+}
+
+.error {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.priceInfo {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.priceInfo p {
+  color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.priceInfo p:last-child {
+  margin-bottom: 0;
+}
+
+.availabilityStatus {
+  color: #2e7d32 !important;
+  background: #e8f5e9;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-top: 1rem !important;
+  text-align: center;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  background: #800000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background: #600000;
+}
+
+.submitButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .bookingContainer {
+    padding: 1rem;
+  }
+
+  .bookingForm {
+    padding: 1.5rem;
+  }
+} 

@@ -1,0 +1,220 @@
+.reportsContainer {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.reportsContainer h2 {
+  color: #800000;
+  margin-bottom: 2rem;
+}
+
+.dateSelector {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dateInput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dateInput label {
+  font-weight: 500;
+  color: #333;
+}
+
+.dateInput input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.generateButton {
+  padding: 0.75rem 2rem;
+  background: #800000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.generateButton:hover {
+  background: #600000;
+}
+
+.generateButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.reportContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.bookingsSection,
+.feedbackSection {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.bookingsSection h3,
+.feedbackSection h3 {
+  color: #800000;
+  margin-bottom: 1.5rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.reportTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.reportTable th {
+  background: #f8f9fa;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.reportTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #666;
+}
+
+.reportTable tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status.confirmed {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.status.cancelled {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.status.completed {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.status.paid {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.status.pending {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.status.failed {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #f59e0b;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.noData {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.revenueCard {
+  background: #800000;
+  color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.darkMode .revenueCard {
+  background: #ff6b6b;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.revenueCard h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.revenueCard p {
+  margin: 0.5rem 0 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .reportsContainer {
+    padding: 1rem;
+  }
+
+  .dateSelector {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .generateButton {
+    margin-top: 1rem;
+  }
+} 
+
+/* Optional: spacing between cards if both appear */
+.statsCards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
